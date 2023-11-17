@@ -17,8 +17,7 @@ Install the bundle for Composer !! as is still on beta version !!
 
 
 ## Tools !
-* Table-crud [neox:table:crud]( Doc/MakeTable.md )
-* ReusableBundle generator "generic" skeleton todo !!!
+
 
 ## Contributing
 If you want to contribute \(thank you!\) to this bundle, here are some guidelines:
