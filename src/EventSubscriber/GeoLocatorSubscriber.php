@@ -45,11 +45,9 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
             // don't do anything if it's not the master request
             return;
         }
-
-        $request 		= $event->getRequest();
-        $nameRoute		= $request->get('_route');
-
-        $UnAuthorize = $this->geolocalisator->checkAuthorize();
+        
+        $nameRoute		= $event->getRequest()->get('_route');
+        $UnAuthorize    = $this->geolocalisator->checkAuthorize();
         if ($UnAuthorize && $nameRoute !== "Seo_unauthorized") {
             $response = new RedirectResponse($UnAuthorize, 307);
             $event->setResponse($response);
