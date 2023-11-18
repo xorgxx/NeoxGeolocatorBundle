@@ -33,6 +33,7 @@ final class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('ip')->defaultValue("https://ipecho.net/plain")->end()
                         ->scalarNode('ip_info')->defaultValue("http://ip-api.com/json/")->end()
+                        ->scalarNode('check_vpn')->defaultValue("http://check.getipintel.net/check.php")->end()
                         ->scalarNode('around')->defaultValue("https://www.villes-voisines.fr/getcp.php?")->end()
                     ->end()
                 ->end()
@@ -48,6 +49,7 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->scalarNode('name_route_unauthorized')->defaultValue('Seo_unauthorized')->end()
             ->scalarNode('timer')->defaultValue(3600)->end()
+            ->scalarNode('check_vpn')->defaultValue(false)->end()
             ->end()
         ;
 

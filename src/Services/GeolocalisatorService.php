@@ -94,23 +94,44 @@
             // http://ip-api.com/docs/api:json#test
             // https://adresse.data.gouv.fr/api-doc/adresse
             // https://vpn-proxy-detection.ipify.org/
-//            $response_ = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp, [
-//                'decode_content' => false
-//            ]);
-            $response_      = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp);
-            $status         = $response_->getStatusCode(); // 200
+            
+            $data      = $this->getInfoCdn($currentIp);
+            if ($this->getParameter("neox_geolocator.check_vpn")) {
+                $data           += $this->getVpnCdn($currentIp);
+                $data["valid"]  = $data["vpn"]->result >= 0 ? false : true;
+            }
+            
+            $this->requestStack->getSession()->set('country', $data);
+        }
+        
+        private function getInfoCdn(string $currentIp){
+            $response_ = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp);
+            $status = $response_->getStatusCode(); // 200
             $data['data']   = json_decode($response_->getContent(), false, 512, JSON_THROW_ON_ERROR);// '{"id": 1420053, "name": "guzzle", ...}'
             $data['ip']     = $currentIp;
+            
             // For test only ======================
-            $data['valid']  = true;
+            $data['valid'] = true;
             // filter on place, country so if is allowed [fr, en]
+//        $countryCode = $this->getParameter('filterRegistration');
             $countryCode = $this->FILTER;
+            
+            // get if registration is open
+            $registration = $this->getParameter('registration');
             
             if (!empty($data) && $data['data']->status !== "fail" && !in_array($data['data']->countryCode, $countryCode["local"], true)) {
                 // Send the modified response object to the event this country is not allowed
                 $data['valid'] = false;
             }
-            $this->requestStack->getSession()->set('country', $data);
+            return $data;
+        }
+        
+        private function getVpnCdn(string $currentIp){
+            // http://check.getipintel.net/check.php?ip=79.90.196.8&contact=dede@aol.com&format=json&flags=m
+            $response_ = $this->httpClient->request('GET', $this->CDN["check_vpn"] . "?ip=$currentIp&contact=dede@aol.com&format=json&flags=m");
+            $status = $response_->getStatusCode(); // 200
+            $data['vpn']   = json_decode($response_->getContent(), false, 512, JSON_THROW_ON_ERROR);// '{"id": 1420053, "name": "guzzle", ...}'
+            return $data;
         }
         
         /**
@@ -181,7 +202,7 @@
             if ($key) {
                 $value = $this->cache->get($key, function (ItemInterface $item) {
                     $timer = $this->getParameter('neox_geolocator.timer');
-                    $item->expiresAfter( (int) $timer ); // 3600 = 1 hour
+                    $item->expiresAfter( (int) $timer); // 3600 = 1 hour
                     $this->getGeoLock();
                     return true;
                 });
