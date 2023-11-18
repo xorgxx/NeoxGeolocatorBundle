@@ -217,8 +217,9 @@
          */
         private function getRealIp( ): ?string
         {
-            $request = $this->requestStack->getCurrentRequest();
-            $ip = null;
+            $request    = $this->requestStack->getCurrentRequest();
+            $ip         = $request->getClientIp();
+            
             if ($request->headers->has('CF-Connecting-IP')) {
                 $ip = $request->headers->get('CF-Connecting-IP');
             }
@@ -240,6 +241,6 @@
             if (str_starts_with($ip, $prefixe)) {
                 return $this->httpClient->request('GET', $this->CDN["ip"])->getContent();
             }
-            return $request->getClientIp();
+            return $ip;
         }
     }
