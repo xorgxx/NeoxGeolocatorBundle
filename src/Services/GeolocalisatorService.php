@@ -98,10 +98,14 @@
 //            $response_ = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp, [
 //                'decode_content' => false
 //            ]);
-            $response_  = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp);
-            $status     = $response_->getStatusCode(); // 200
+            $response_ = $this->httpClient->request('GET', $this->CDN["ip_info"] . "192.168.1.17");
+            $status = $response_->getStatusCode(); // 200
 //            $headerType = $response_->getHeaderLine('content-type'); // 'application/json; charset=utf8'
             $data['data'] = json_decode($response_->getContent(), false, 512, JSON_THROW_ON_ERROR);// '{"id": 1420053, "name": "guzzle", ...}'
+
+//            if ($data['data']["status"] == "fail") {
+//
+//            }
             $data['ip'] = $currentIp;
             
             // For test only ======================
@@ -113,7 +117,7 @@
             // get if registration is open
             $registration = $this->getParameter('registration');
             
-            if (!empty($data) && !in_array($data['data']->countryCode, $countryCode["local"], true)) {
+            if (!empty($data) && $data['data']->status !== "fail" && !in_array($data['data']->countryCode, $countryCode["local"], true)) {
                 // Send the modified response object to the event this country is not allowed
                 $data['valid'] = false;
             }
@@ -214,29 +218,23 @@
         private function getRealIp( ): ?string
         {
             $request = $this->requestStack->getCurrentRequest();
-            $ip = null;
+            
             if ($request->headers->has('CF-Connecting-IP')) {
-                $ip = $request->headers->get('CF-Connecting-IP');
+                return $request->headers->get('CF-Connecting-IP');
             }
             
             if ($request->headers->has('X-Real-IP')) {
-                $ip = $request->headers->get('X-Real-IP');
+                return $request->headers->get('X-Real-IP');
             }
             
             if ($request->headers->has('X-Forwarded-For')) {
                 $ips = explode(',', $request->headers->get('X-Forwarded-For'), 2);
-                $ip = trim($ips[0]); // The left-most IP address is the original client
+                return trim($ips[0]); // The left-most IP address is the original client
             }
             
             if ($request->getClientIp() === "127.0.0.1") {
-                $ip = $this->httpClient->request('GET', $this->CDN["ip"])->getContent();
-            }
-            
-            $prefixe = "192.";
-            if (str_starts_with($ip, $prefixe)) {
                 return $this->httpClient->request('GET', $this->CDN["ip"])->getContent();
             }
-            
             return $request->getClientIp();
         }
     }
