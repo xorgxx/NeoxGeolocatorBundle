@@ -98,7 +98,7 @@
 //            $response_ = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp, [
 //                'decode_content' => false
 //            ]);
-            $response_ = $this->httpClient->request('GET', $this->CDN["ip_info"] . "192.168.1.17");
+            $response_ = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp);
             $status = $response_->getStatusCode(); // 200
 //            $headerType = $response_->getHeaderLine('content-type'); // 'application/json; charset=utf8'
             $data['data'] = json_decode($response_->getContent(), false, 512, JSON_THROW_ON_ERROR);// '{"id": 1420053, "name": "guzzle", ...}'
