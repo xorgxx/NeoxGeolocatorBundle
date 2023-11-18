@@ -225,7 +225,7 @@
             }
             
             if ($request->headers->has('X-Real-IP')) {
-                $ip = $request->headers->get('X-Real-IP');
+                return $request->headers->get('X-Real-IP');
             }
             
             if ($request->headers->has('X-Forwarded-For')) {
