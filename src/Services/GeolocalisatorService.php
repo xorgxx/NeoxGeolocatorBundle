@@ -181,7 +181,7 @@
             if ($key) {
                 $value = $this->cache->get($key, function (ItemInterface $item) {
                     $timer = $this->getParameter('neox_geolocator.timer');
-                    $item->expiresAfter($timer); // 3600 = 1 hour
+                    $item->expiresAfter( (int) $timer ); // 3600 = 1 hour
                     $this->getGeoLock();
                     return true;
                 });
