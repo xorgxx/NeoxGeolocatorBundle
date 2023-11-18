@@ -94,28 +94,17 @@
             // http://ip-api.com/docs/api:json#test
             // https://adresse.data.gouv.fr/api-doc/adresse
             // https://vpn-proxy-detection.ipify.org/
-
 //            $response_ = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp, [
 //                'decode_content' => false
 //            ]);
-            $response_ = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp);
-            $status = $response_->getStatusCode(); // 200
-//            $headerType = $response_->getHeaderLine('content-type'); // 'application/json; charset=utf8'
-            $data['data'] = json_decode($response_->getContent(), false, 512, JSON_THROW_ON_ERROR);// '{"id": 1420053, "name": "guzzle", ...}'
-
-//            if ($data['data']["status"] == "fail") {
-//
-//            }
-            $data['ip'] = $currentIp;
-            
+            $response_      = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp);
+            $status         = $response_->getStatusCode(); // 200
+            $data['data']   = json_decode($response_->getContent(), false, 512, JSON_THROW_ON_ERROR);// '{"id": 1420053, "name": "guzzle", ...}'
+            $data['ip']     = $currentIp;
             // For test only ======================
-            $data['valid'] = true;
+            $data['valid']  = true;
             // filter on place, country so if is allowed [fr, en]
-//        $countryCode = $this->getParameter('filterRegistration');
             $countryCode = $this->FILTER;
-            
-            // get if registration is open
-            $registration = $this->getParameter('registration');
             
             if (!empty($data) && $data['data']->status !== "fail" && !in_array($data['data']->countryCode, $countryCode["local"], true)) {
                 // Send the modified response object to the event this country is not allowed
