@@ -149,23 +149,14 @@
             }
             
             $response_      = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp . "?fields=status,message,continent,continentCode,country,countryCode,regionName,city,zip,lat,lon,reverse,mobile,proxy,hosting,query");
-            $status         = $response_->getStatusCode(); // 200
-//            $data['data']   = json_decode($response_->getContent(), false, 512, JSON_THROW_ON_ERROR);// '{"id": 1420053, "name": "guzzle", ...}'
+//            $status         = $response_->getStatusCode(); // 200
             $Geolocation    = GeolocationModel::fromJson($response_->getContent());
-            
-            // filter on place, country so if is allowed [fr, en]
-//        $countryCode = $this->getParameter('filterRegistration');
-//            $countryCode    = $this->FILTER;
 
-//            if (!empty($data) && $data['data']->status !== "fail" && !in_array($data['data']->countryCode, $countryCode["local"], true)) {
-//                // Send the modified response object to the event this country is not allowed
-//                $data['valid'] = false;
-//            }
             return $Geolocation;
         }
         
         private function getVpnCdn(string $currentIp){
-            // http://check.getipintel.net/check.php?ip=79.90.196.8&contact=dede@aol.com&format=json&flags=m
+            // http://check.getipintel.net/check.php?ip=xxxxxx&contact=dede@aol.com&format=json&flags=m
             $response_ = $this->httpClient->request('GET', $this->CDN["check_vpn"] . "?ip=$currentIp&contact=dede@aol.com&format=json&flags=m");
             $status = $response_->getStatusCode(); // 200
             $data['vpn']   = json_decode($response_->getContent(), false, 512, JSON_THROW_ON_ERROR);// '{"id": 1420053, "name": "guzzle", ...}'
