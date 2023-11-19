@@ -108,7 +108,10 @@
                 $data      = $this->getInfoCdn($currentIp);
                 if ($this->getParameter("neox_geolocator.check_vpn")) {
                     $data           += $this->getVpnCdn($currentIp);
-                    $data["valid"]  = $data["vpn"]->result > 0 ? false : true;
+                    if( $data["valid"] = true ){
+                        $data["valid"]  = !($data["vpn"]->result > 0);
+                    }
+                    
                 }
             }
             $this->requestStack->getSession()->set('country', $data);
