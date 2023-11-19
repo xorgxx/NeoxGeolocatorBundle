@@ -156,6 +156,7 @@
         }
         
         private function getVpnCdn(string $currentIp){
+            // just in case we need new check vpn proxy blablabla
             // http://check.getipintel.net/check.php?ip=xxxxxx&contact=dede@aol.com&format=json&flags=m
             $response_ = $this->httpClient->request('GET', $this->CDN["check_vpn"] . "?ip=$currentIp&contact=dede@aol.com&format=json&flags=m");
             $status = $response_->getStatusCode(); // 200
