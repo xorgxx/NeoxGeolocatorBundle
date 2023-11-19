@@ -5,6 +5,7 @@
     use GuzzleHttp\Client;
     use GuzzleHttp\Exception\GuzzleException;
     use JsonException;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
     use phpDocumentor\Reflection\Types\Boolean;
     use Psr\Cache\InvalidArgumentException;
     use Symfony\Component\BrowserKit\HttpBrowser;
@@ -100,43 +101,67 @@
             // https://adresse.data.gouv.fr/api-doc/adresse
             // https://vpn-proxy-detection.ipify.org/
             
-            // in dev mode mock
-            if ( $this->kernel->getEnvironment() === 'dev') {
-                $data = '{"data":{"status":"success","country":"France","countryCode":"FR","region":"ARA","regionName":"----","city":"Paris","zip":"75100","lat":166.366,"lon":18.4791,"timezone":"Europe\/Paris","isp":"Societe Francaise Du Radiotelephone - SFR SA","org":"SFR User Data","as":"AS15557 Societe Francaise Du Radiotelephone - SFR SA","query":"xx.xxx.xx.xx"},"ip":"xx.xxx.xx.xx","valid":true,"vpn":{"status":"success","result":"0","queryIP":"xx.xxx.xx.xx","queryFlags":"m","queryOFlags":null,"queryFormat":"json","contact":"dede@aol.com"}}';
-                $data = json_decode($data, true);
-            }else{
-                $data      = $this->getInfoCdn($currentIp);
-                if ($this->getParameter("neox_geolocator.check_vpn")) {
-                    $data           += $this->getVpnCdn($currentIp);
-                    if($data["valid"]){
-                        $data["valid"]  = !($data["vpn"]->result > 0);
-                    }
-                    
-                }
+            // get geolocation
+            $Geolocation = $this->getInfoCdn($currentIp);
+            
+            // set filter Local
+            $this->setFilterLocal($Geolocation);
+            
+            // set filter Connection
+            $this->setFilterConnection($Geolocation);
+            
+            // set filter contement
+            $this->setFilterContinents($Geolocation);
+            
+            $this->requestStack->getSession()->set('geolocator', $Geolocation);
+        }
+        
+        private function setFilterLocal(GeolocationModel $Geolocation){
+            $local    = $this->FILTER["local"];
+            if (!empty($local) && $Geolocation->getStatus() !== "fail" && !in_array($Geolocation->getCountryCode(), $local, true)) {
+                // Send the modified response object to the event this country is not allowed
+                $Geolocation->setValid(false);
             }
-            $this->requestStack->getSession()->set('country', $data);
+        }
+        
+        private function setFilterConnection(GeolocationModel $Geolocation){
+            $connection    = $this->FILTER["connection"];
+            if (!empty($connection) && $Geolocation->getStatus() !== "fail" && !in_array($Geolocation->isProxy(), $connection, true)) {
+                // Send the modified response object to the event this country is not allowed
+                $Geolocation->setValid(false);
+            }
+        }
+        
+        private function setFilterContinents(GeolocationModel $Geolocation){
+            $continents    = $this->FILTER["continents"];
+            if (!empty($continents) && $Geolocation->getStatus() !== "fail" && !in_array($Geolocation->getContinent(), $continents, true)) {
+                // Send the modified response object to the event this country is not allowed
+                $Geolocation->setValid(false);
+            }
         }
         
         private function getInfoCdn(string $currentIp){
-            $response_ = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp);
-            $status = $response_->getStatusCode(); // 200
-            $data['data']   = json_decode($response_->getContent(), false, 512, JSON_THROW_ON_ERROR);// '{"id": 1420053, "name": "guzzle", ...}'
-            $data['ip']     = $currentIp;
             
-            // For test only ======================
-            $data['valid'] = true;
+            // in dev mode mock
+            if ( $this->kernel->getEnvironment() === 'dev') {
+                // for test  Bulgary
+                $currentIp      = "156.146.55.226";
+            }
+            
+            $response_      = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp . "?fields=status,message,continent,continentCode,country,countryCode,regionName,city,zip,lat,lon,reverse,mobile,proxy,hosting,query");
+            $status         = $response_->getStatusCode(); // 200
+//            $data['data']   = json_decode($response_->getContent(), false, 512, JSON_THROW_ON_ERROR);// '{"id": 1420053, "name": "guzzle", ...}'
+            $Geolocation    = GeolocationModel::fromJson($response_->getContent());
+            
             // filter on place, country so if is allowed [fr, en]
 //        $countryCode = $this->getParameter('filterRegistration');
-            $countryCode = $this->FILTER;
-            
-            // get if registration is open
-            $registration = $this->getParameter('registration');
-            
-            if (!empty($data) && $data['data']->status !== "fail" && !in_array($data['data']->countryCode, $countryCode["local"], true)) {
-                // Send the modified response object to the event this country is not allowed
-                $data['valid'] = false;
-            }
-            return $data;
+//            $countryCode    = $this->FILTER;
+
+//            if (!empty($data) && $data['data']->status !== "fail" && !in_array($data['data']->countryCode, $countryCode["local"], true)) {
+//                // Send the modified response object to the event this country is not allowed
+//                $data['valid'] = false;
+//            }
+            return $Geolocation;
         }
         
         private function getVpnCdn(string $currentIp){
@@ -184,12 +209,12 @@
          */
         public function isAuthorize(): bool
         {
-            $t = $this->requestStack->getSession()->get('country');
-            if ($t) {
-                return $t['valid'];
+            $t = $this->requestStack->getSession()->get('geolocator');
+            if ($t instanceof  GeolocationModel) {
+                return $t->isValid();
             }
             $this->getGeoLock();
-            return $this->requestStack->getSession()->get('country')['valid'];
+            return $t->isValid();
         }
         
         /**
