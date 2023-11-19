@@ -234,9 +234,6 @@
             return $this;
         }
         
-        
-        
-        
         public static function fromJson($json)
         {
             $data = json_decode($json, true);
@@ -299,6 +296,7 @@
                 'proxy'         => $this->proxy,
                 'hosting'       => $this->hosting,
                 'query'         => $this->query,
+                'valid'         => $this->valid,
             ];
         }
     }
