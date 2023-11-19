@@ -214,7 +214,7 @@
          */
         public function getIpInfo(): mixed
         {
-            return $this->requestStack->getSession()->get('country');
+            return $this->requestStack->getSession()->get('geolocator');
         }
         
         /**
