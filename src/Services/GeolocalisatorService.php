@@ -21,6 +21,7 @@
     use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
     use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
     use Symfony\Contracts\HttpClient\HttpClientInterface;
+    use Symfony\Component\HttpKernel\KernelInterface;
     use UnitEnum;
     
     class GeolocalisatorService
@@ -41,6 +42,8 @@
          * @var RequestStack
          */
         private $requestStack;
+        
+        private KernelInterface $kernel;
         /**
          * @var CacheInterface
          */
@@ -62,6 +65,7 @@
             HttpClientInterface   $httpClient,
             RequestStack          $requestStack,
             CacheInterface        $cache,
+            KernelInterface       $kernel,
         )
         {
             
@@ -70,6 +74,7 @@
             $this->httpClient       = $httpClient;
             $this->requestStack     = $requestStack;
             $this->cache            = $cache;
+            $this->kernel           = $kernel;
             $this->CDN              = $this->getParameter("neox_geolocator.cdn");
             $this->FILTER           = $this->getParameter("neox_geolocator.filter");
             
@@ -95,12 +100,17 @@
             // https://adresse.data.gouv.fr/api-doc/adresse
             // https://vpn-proxy-detection.ipify.org/
             
-            $data      = $this->getInfoCdn($currentIp);
-            if ($this->getParameter("neox_geolocator.check_vpn")) {
-                $data           += $this->getVpnCdn($currentIp);
-                $data["valid"]  = !($data["vpn"]->result > 0);
+            // in dev mode mock
+            if ( $this->kernel->getEnvironment() === 'dev') {
+                $data = '{"data":{"status":"success","country":"France","countryCode":"FR","region":"ARA","regionName":"----","city":"Paris","zip":"75100","lat":166.366,"lon":18.4791,"timezone":"Europe\/Paris","isp":"Societe Francaise Du Radiotelephone - SFR SA","org":"SFR User Data","as":"AS15557 Societe Francaise Du Radiotelephone - SFR SA","query":"xx.xxx.xx.xx"},"ip":"xx.xxx.xx.xx","valid":true,"vpn":{"status":"success","result":"0","queryIP":"xx.xxx.xx.xx","queryFlags":"m","queryOFlags":null,"queryFormat":"json","contact":"dede@aol.com"}}';
+                $data = json_decode($data, true);
+            }else{
+                $data      = $this->getInfoCdn($currentIp);
+                if ($this->getParameter("neox_geolocator.check_vpn")) {
+                    $data           += $this->getVpnCdn($currentIp);
+                    $data["valid"]  = $data["vpn"]->result > 0 ? false : true;
+                }
             }
-            
             $this->requestStack->getSession()->set('country', $data);
         }
         
@@ -246,7 +256,12 @@
             if ($request->getClientIp() === "127.0.0.1") {
                 $ip = $this->httpClient->request('GET', $this->CDN["ip"])->getContent();
             }
-            
+//
+//            // in dev mode mock
+//            if ( $this->kernel->getEnvironment() === 'dev') {
+//                $ip = ""
+//            }
+//
             $prefixe = "192.";
             if (str_starts_with($ip, $prefixe)) {
                 return $this->httpClient->request('GET', $this->CDN["ip"])->getContent();
