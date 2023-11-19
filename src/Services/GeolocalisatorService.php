@@ -2,15 +2,15 @@
     
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Services;
     
-    use GuzzleHttp\Client;
-    use GuzzleHttp\Exception\GuzzleException;
+//    use GuzzleHttp\Client;
+//    use GuzzleHttp\Exception\GuzzleException;
     use JsonException;
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
-    use phpDocumentor\Reflection\Types\Boolean;
+//    use phpDocumentor\Reflection\Types\Boolean;
     use Psr\Cache\InvalidArgumentException;
     use Symfony\Component\BrowserKit\HttpBrowser;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-    use Symfony\Component\DomCrawler\Crawler;
+//    use Symfony\Component\DomCrawler\Crawler;
     use Symfony\Component\HttpClient\HttpClient;
     use Symfony\Component\HttpFoundation\Request;
     use Symfony\Component\HttpFoundation\RequestStack;
@@ -82,12 +82,10 @@
         }
         
         /**
-         * @throws GuzzleException
          * @throws ClientExceptionInterface
          * @throws RedirectionExceptionInterface
          * @throws ServerExceptionInterface
          * @throws TransportExceptionInterface
-         * @throws JsonException
          */
         public function getGeoLock($ipCheck = null): void
         {
@@ -140,6 +138,12 @@
             }
         }
         
+        /**
+         * @throws TransportExceptionInterface
+         * @throws ServerExceptionInterface
+         * @throws RedirectionExceptionInterface
+         * @throws ClientExceptionInterface
+         */
         private function getInfoCdn(string $currentIp){
             
             // in dev mode mock
@@ -150,9 +154,7 @@
             
             $response_      = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp . "?fields=status,message,continent,continentCode,country,countryCode,regionName,city,zip,lat,lon,reverse,mobile,proxy,hosting,query");
 //            $status         = $response_->getStatusCode(); // 200
-            $Geolocation    = GeolocationModel::fromJson($response_->getContent());
-
-            return $Geolocation;
+            return GeolocationModel::fromJson($response_->getContent());
         }
         
         private function getVpnCdn(string $currentIp){
@@ -168,18 +170,16 @@
          * @param $zipCode
          *
          * @return array|null
-         * @throws GuzzleException*@throws JsonException
-         * @throws JsonException
+         * *@throws TransportExceptionInterface|JsonException
          */
         public function getAround($zipCode): ?array
         {
             // check ip
             // https://www.villes-voisines.fr/getcp.php?cp=91190&rayon=10
             $r          = null;
-            $client     = new Client();
-            $response_  = $client->request('GET', 'https://www.villes-voisines.fr/getcp.php?cp=' . $zipCode . '&rayon=50');
-            $headerType = $response_->getHeaderLine('content-type'); // 'application/json; charset=utf8'
-            $data = json_decode($response_->getBody()->getContents(), false, 512, JSON_THROW_ON_ERROR); // '{"id": 1420053, "name": "guzzle", ...}'
+//            $client     = new Client();
+            $response_  = $this->httpClient->request('GET', 'https://www.villes-voisines.fr/getcp.php?cp=' . $zipCode . '&rayon=50');
+            $data = json_decode($response_->getContent(), false, 512, JSON_THROW_ON_ERROR); // '{"id": 1420053, "name": "guzzle", ...}'
             if ($data) {
                 foreach ($data as $item) {
                     $r[$item->code_postal] = $item->code_postal;
@@ -192,8 +192,6 @@
         
         /**
          * @return bool
-         * @throws GuzzleException
-         * @throws JsonException
          * @throws ClientExceptionInterface
          * @throws RedirectionExceptionInterface
          * @throws ServerExceptionInterface
@@ -222,7 +220,6 @@
          * @throws ClientExceptionInterface
          * @throws TransportExceptionInterface
          * @throws ServerExceptionInterface
-         * @throws GuzzleException|JsonException
          * @throws InvalidArgumentException
          */
         public function checkAuthorize($ip = null): bool|string
@@ -250,7 +247,6 @@
         }
         
         /**
-         * @throws TransportExceptionInterface
          * @throws ServerExceptionInterface
          * @throws RedirectionExceptionInterface
          * @throws ClientExceptionInterface
