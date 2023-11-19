@@ -102,14 +102,12 @@
             // get geolocation
             $Geolocation = $this->getInfoCdn($currentIp);
             
-            // set filter Local
-            $this->setFilterLocal($Geolocation);
-            
-            // set filter Connection
-            $this->setFilterConnection($Geolocation);
-            
             // set filter contement
             $this->setFilterContinents($Geolocation);
+            // set filter Local
+            $this->setFilterLocal($Geolocation);
+            // set filter Connection
+            $this->setFilterConnection($Geolocation);
             
             $this->requestStack->getSession()->set('geolocator', $Geolocation);
         }
