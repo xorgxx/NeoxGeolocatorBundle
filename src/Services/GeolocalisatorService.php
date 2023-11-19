@@ -128,7 +128,7 @@
             $connection    = $this->FILTER["connection"];
             if (!empty($connection) && $Geolocation->getStatus() !== "fail" ) {
                 // Send the modified response object to the event this country is not allowed
-                $Geolocation->setValid( !$Geolocation->isProxy() );
+                $Geolocation->setValid(!$Geolocation->isProxy());
             }
         }
         
@@ -144,8 +144,8 @@
             
             // in dev mode mock
             if ( $this->kernel->getEnvironment() === 'dev') {
-                // for test  Bulgary
-                $currentIp      = "156.146.55.226";
+                // for test  Bulgary "156.146.55.226"
+                $currentIp      = $this->getParameter("neox_geolocator.ip_local_dev") ;
             }
             
             $response_      = $this->httpClient->request('GET', $this->CDN["ip_info"] . $currentIp . "?fields=status,message,continent,continentCode,country,countryCode,regionName,city,zip,lat,lon,reverse,mobile,proxy,hosting,query");
