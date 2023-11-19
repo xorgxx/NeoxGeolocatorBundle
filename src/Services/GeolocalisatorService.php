@@ -253,19 +253,6 @@
                 $ip = trim($ips[0]); // The left-most IP address is the original client
             }
             
-            if ($request->getClientIp() === "127.0.0.1") {
-                $ip = $this->httpClient->request('GET', $this->CDN["ip"])->getContent();
-            }
-//
-//            // in dev mode mock
-//            if ( $this->kernel->getEnvironment() === 'dev') {
-//                $ip = ""
-//            }
-//
-            $prefixe = "192.";
-            if (str_starts_with($ip, $prefixe)) {
-                return $this->httpClient->request('GET', $this->CDN["ip"])->getContent();
-            }
             return $ip;
         }
     }
