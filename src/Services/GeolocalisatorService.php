@@ -126,9 +126,9 @@
         
         private function setFilterConnection(GeolocationModel $Geolocation){
             $connection    = $this->FILTER["connection"];
-            if (!empty($connection) && $Geolocation->getStatus() !== "fail" && !in_array($Geolocation->isProxy(), $connection, true)) {
+            if (!empty($connection) && $Geolocation->getStatus() !== "fail" ) {
                 // Send the modified response object to the event this country is not allowed
-                $Geolocation->setValid(false);
+                $Geolocation->setValid( !$Geolocation->isProxy() );
             }
         }
         
