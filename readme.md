@@ -65,10 +65,22 @@ It set automatique but you can custom (by default)
               - "North America"
       #            - "South America"
       #            - "Asia"
-      # Crawler how can in website
+      # Crawler how can in website will empty to refuse all !!
       crawler:
-        - ".googlebot.com"
-        - "bring.com"
+          - "Googlebot"
+          - "Bingbot"
+          - "YandexBot"
+          - "AppleBot"
+          - "DuckDuckBot"
+          - "BaiduSpider"
+          - "SpiderSogou"
+          - "FacebookExternalHit"
+          - "Exabot"
+          - "Swiftbot"
+          - "SlurpBot"
+          - "CCBot"
+          - "GoogleOther"
+          - "Google-InspectionTool"
         
       name_route_unauthorized: "Seo_unauthorized"
       timer: 10
