@@ -48,8 +48,6 @@ It set automatique but you can custom (by default)
       cdn:
           ip: 'https://ipecho.net/plain'
           ip_info: "http://ip-api.com/json/"
-          check_vpn: "http://check.getipintel.net/check.php"
-          around: 'https://www.villes-voisines.fr/getcp.php?cp=91190&rayon=10'
       filter:
           # Local how can in website
           local:
