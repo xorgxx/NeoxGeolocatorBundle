@@ -111,6 +111,10 @@
             // set filter contement
             $this->setFilterContinents($Geolocation);
             
+            // set crawler
+            $this->setFilterCrawler($Geolocation);
+            
+            
             $this->requestStack->getSession()->set('geolocator', $Geolocation);
             
             return $Geolocation;
@@ -137,6 +141,14 @@
             if (!empty($continents) && $Geolocation->getStatus() !== "fail" && !in_array($Geolocation->getContinent(), $continents, true)) {
                 // Send the modified response object to the event this country is not allowed
                 $Geolocation->setValid(false);
+            }
+        }
+        
+        private function setFilterCrawler(GeolocationModel $Geolocation){
+            $crawler    = $this->getParameter("neox_geolocator.crawler");
+            if (!empty($crawler) && $Geolocation->getStatus() !== "fail" && $this->stringContainsSubstringFromArray($Geolocation->getReverse(), $crawler) ) {
+                // Send the modified response object to the event this country is not allowed
+                $Geolocation->setValid(true);
             }
         }
         
@@ -272,5 +284,14 @@
             }
             
             return $ip;
+        }
+        
+        private function stringContainsSubstringFromArray($mainString, $substringsArray) {
+            foreach ($substringsArray as $substring) {
+                if (strpos($mainString, $substring) !== false) {
+                    return true; // Return true if any substring is found
+                }
+            }
+            return false; // Return false if none of the substrings are found
         }
     }

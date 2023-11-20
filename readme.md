@@ -65,7 +65,11 @@ It set automatique but you can custom (by default)
               - "North America"
       #            - "South America"
       #            - "Asia"
-              
+      # Crawler how can in website
+      crawler:
+        - ".googlebot.com"
+        - "bring.com"
+        
       name_route_unauthorized: "Seo_unauthorized"
       timer: 10
       check_vpn: false
