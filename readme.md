@@ -87,6 +87,7 @@ It set automatique but you can custom (by default)
 ## How to use ?
  * Well it pretty match all !!
  * be aware that i use Redis to store session information !!! it may have impact in your application.
+ * Cache system to put expirAfter to be shure that the key will expire after xx and force the controlle againe.
 
 just need to create route & template to `name_route_unauthorized: "Seo_unauthorized"`
 ````php
