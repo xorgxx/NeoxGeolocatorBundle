@@ -87,7 +87,7 @@
          * @throws ServerExceptionInterface
          * @throws TransportExceptionInterface
          */
-        public function getGeoLock($ipCheck = null): void
+        public function getGeoLock($ipCheck = null): null|GeolocationModel
         {
             
             // check ip
@@ -102,14 +102,18 @@
             // get geolocation
             $Geolocation = $this->getInfoCdn($currentIp);
             
-            // set filter contement
-            $this->setFilterContinents($Geolocation);
             // set filter Local
             $this->setFilterLocal($Geolocation);
+            
             // set filter Connection
             $this->setFilterConnection($Geolocation);
             
+            // set filter contement
+            $this->setFilterContinents($Geolocation);
+            
             $this->requestStack->getSession()->set('geolocator', $Geolocation);
+            
+            return $Geolocation;
         }
         
         private function setFilterLocal(GeolocationModel $Geolocation){
@@ -201,7 +205,7 @@
             if ($t instanceof  GeolocationModel) {
                 return $t->isValid();
             }
-            $this->getGeoLock();
+            $t = $this->getGeoLock();
             return $t->isValid();
         }
         
