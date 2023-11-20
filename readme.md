@@ -85,7 +85,8 @@ It set automatique but you can custom (by default)
       check_vpn: false
 ```
 ## How to use ?
- Well it pretty match all !!
+ * Well it pretty match all !!
+ * be aware that i use Redis to store session information !!! it may have impact in your application.
 
 just need to create route & template to `name_route_unauthorized: "Seo_unauthorized"`
 ````php
