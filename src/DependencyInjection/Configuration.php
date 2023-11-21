@@ -32,6 +32,8 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('ip_local_dev')->defaultValue(null)->end()
             ->arrayNode('cdn')
                 ->children()
+                    ->scalarNode('api_use')->defaultValue("standart")->end()
+                    ->scalarNode('api_key')->defaultValue("xxxxxxxx")->end()
                     ->scalarNode('ip')->defaultValue("https://ipecho.net/plain")->end()
                     ->scalarNode('ip_info')->defaultValue("http://ip-api.com/json/")->end()
                     ->scalarNode('check_vpn')->defaultValue("http://check.getipintel.net/check.php")->end()

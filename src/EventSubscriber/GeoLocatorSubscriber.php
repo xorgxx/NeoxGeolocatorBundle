@@ -2,7 +2,7 @@
 
 namespace NeoxGeolocator\NeoxGeolocatorBundle\EventSubscriber;
 
-use NeoxGeolocator\NeoxGeolocatorBundle\Services\GeolocalisatorService;
+use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\GeolocatorFactory;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -17,17 +17,9 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class GeoLocatorSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var GeolocalisatorService
-     */
-    private GeolocalisatorService $geolocalisator;
-
-    /**
-     * @param GeolocalisatorService $geolocator
-     */
-    public function __construct(GeolocalisatorService $geolocator)
+    public function __construct( GeolocatorFactory $geolocatorFactory)
     {
-        $this->geolocalisator = $geolocator;
+        $this->geolocatorFactory    = $geolocatorFactory;
     }
     
     /**
@@ -47,14 +39,23 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         }
         
         $nameRoute		= $event->getRequest()->get('_route');
-        $UnAuthorize    = $this->geolocalisator->checkAuthorize();
-        if ($UnAuthorize && $nameRoute !== "Seo_unauthorized") {
-            $response = new RedirectResponse($UnAuthorize, 307);
-            $event->setResponse($response);
+        if (!$this->containsKeyword($nameRoute, ['profile', '_wd'])) {
+            $Geolocator    = $this->geolocatorFactory->getGeolocatorService()->checkAuthorize();
+            if ( $Geolocator !== true && $nameRoute !== "Seo_unauthorized") {
+                $response = new RedirectResponse($Geolocator, 307);
+                $event->setResponse($response);
+            }
         }
-
     }
-
+    private function containsKeyword($haystack, array $keywords)
+    {
+        foreach ($keywords as $keyword) {
+            if (strpos($haystack, $keyword) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
     public static function getSubscribedEvents(): array
     {
         return [

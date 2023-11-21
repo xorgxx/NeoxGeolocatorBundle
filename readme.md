@@ -46,8 +46,8 @@ It set automatique but you can custom (by default)
    neox_geolocator:
       ip_local_dev: "156.146.55.226" # for test  Bulgary "156.146.55.226"
       cdn:
-          ip: 'https://ipecho.net/plain'
-          ip_info: "http://ip-api.com/json/"
+          api_use: "findip.net" # ip-api.com freemium,  check.getipintel.net FREE, https://findip.net/ free
+          api_key: "xxxxxxxxxxxxxxxxxx"
       filter:
           # Local how can in website
           local:
@@ -99,17 +99,17 @@ just need to create route & template to `name_route_unauthorized: "Seo_unauthori
     public function unauthorized(Request $request, CacheItemPoolInterface  $adapter): Response
     {
         $session    = $request->getSession();
-        $item       = $adapter->getItem($session->getId());
-        $metadata   = $item->getMetadata();
+        $Geolocator = $adapter->getItem(geolocatorAbstract::NAME . $session->getId());
+        $metadata   = $Geolocator->getMetadata();
         
-        if ( $item && $item->isHit() && array_key_exists('expiry', $metadata)) {
+        if ( $Geolocator && $Geolocator->isHit() && array_key_exists('expiry', $metadata)) {
             $expirationTimestamp    = $metadata['expiry'];
             $expirationDateTime     = $date = new DateTime("@$expirationTimestamp");
         };
         
-        $Geolocator = $request->getSession()->get('geolocator');
+        $i = $Geolocator->get("value");
         return $this->render('unauthorized.html.twig', [
-            "Geolocator"        => $Geolocator,
+            "Geolocator"        => $Geolocator->get("value"),
             "timer"             => $expirationDateTime ?? null,
         ]);
     }

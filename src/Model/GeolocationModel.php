@@ -239,7 +239,7 @@
             $data = json_decode($json, true);
             
             if ($data === 'fail') {
-                $data['status']        = 'success';
+                $data['status']        = 'mock';
                 $data['continent']     = 'Europe';
                 $data['continentCode'] = 'EU';
                 $data['country']       = 'France';

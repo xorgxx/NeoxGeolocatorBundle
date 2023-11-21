@@ -24,8 +24,8 @@ services:
             - '../../../src/Kernel.php'
     
     # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
-    NeoxGeolocator\NeoxGeolocatorBundle\Services\GeolocalisatorService:
+    # please note that last definitions always *replace* previous ones    
+    NeoxGeolocator\NeoxGeolocatorBundle\Pattern\GeolocatorFactory:
         arguments:
             - '@Symfony\Component\Routing\RouterInterface'
             - '@Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface'
@@ -33,9 +33,10 @@ services:
             - '@Symfony\Component\HttpFoundation\RequestStack'
             - '@Symfony\Contracts\Cache\CacheInterface'
             - '@Symfony\Component\HttpKernel\KernelInterface'
-    
+            
     NeoxGeolocator\NeoxGeolocatorBundle\EventSubscriber\GeoLocatorSubscriber:
         arguments:
-            - '@NeoxGeolocator\NeoxGeolocatorBundle\Services\GeolocalisatorService'
+            - '@NeoxGeolocator\NeoxGeolocatorBundle\Pattern\GeolocatorFactory'
+            
         tags:
             - { name: 'kernel.event_listener', event: 'kernel.request', method: 'onKernelRequest' }
