@@ -23,11 +23,11 @@
             // set filter Local
             $this->setFilterLocal();
             
-            // set filter Connection
-            $this->setFilterConnection();
-            
             // set filter contement
             $this->setFilterContinents();
+            
+            // set filter Connection
+            $this->setFilterConnection();
             
             // set crawler
             $this->setFilterCrawler();

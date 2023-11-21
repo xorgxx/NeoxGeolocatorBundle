@@ -49,21 +49,23 @@ It set automatique but you can custom (by default)
           api_use: "findip.net" # ip-api.com freemium,  check.getipintel.net FREE, https://findip.net/ free
           api_key: "xxxxxxxxxxxxxxxxxx"
       filter:
-          # Local how can in website
+          # Local how can in website | rule order read = 1
           local:
               - 'FR'
               - 'BG'
-          # Connection how cant in website !!!
-          connection:
-              - "vpn"
-              - "proxy"
-          # Continents how can in website
+   
+          # Continents how can in website | rule order read = 2
           continents:
               - "Europe"
               - "North America"
       #            - "South America"
-      #            - "Asia"
-      # Crawler how can in website will empty to refuse all !!
+      #            - "Asia"  
+          # Connection how cant in website !!! | rule order read = 3
+          connection:
+              - "vpn"
+              - "proxy"
+              
+      # Crawler how can in website will empty to refuse all !! | rule order read = 4
       crawler:
           - "Googlebot"
           - "Bingbot"
