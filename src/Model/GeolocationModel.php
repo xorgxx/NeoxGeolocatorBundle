@@ -238,42 +238,42 @@
         {
             $data = json_decode($json, true);
             
-            if ($data === 'fail') {
-                $data['status']        = 'mock';
-                $data['continent']     = 'Europe';
-                $data['continentCode'] = 'EU';
-                $data['country']       = 'France';
-                $data['countryCode']   = 'FR';
-                $data['regionName']    = 'Paris';
-                $data['city']          = 'Paris';
-                $data['zip']           = '75000';
-                $data['lat']           = 40.6951;
-                $data['lon']           = 20.325;
-                $data['reverse']       = 'unn-156-146-55-226.cdn';
-                $data['mobile']        = false;
-                $data['proxy']         = false;
-                $data['hosting']       = false;
-                $data['query']         = '156.146.55.226';
-                $data['valid']         = true;
-                return $data;
-            }
+//            if ($data === 'fail' || $data === '') {
+//                $data['status']        = 'mock';
+//                $data['continent']     = 'Europe';
+//                $data['continentCode'] = 'EU';
+//                $data['country']       = 'France';
+//                $data['countryCode']   = 'FR';
+//                $data['regionName']    = 'Paris';
+//                $data['city']          = 'Paris';
+//                $data['zip']           = '75000';
+//                $data['lat']           = 40.6951;
+//                $data['lon']           = 20.325;
+//                $data['reverse']       = 'unn-156-146-55-226.cdn';
+//                $data['mobile']        = false;
+//                $data['proxy']         = false;
+//                $data['hosting']       = false;
+//                $data['query']         = '156.146.55.226';
+//                $data['valid']         = true;
+//                return $data;
+//            }
 
             return new self(
-                $data['status']  ,
-                $data['continent'],
-                $data['continentCode'],
-                $data['country'],
-                $data['countryCode'],
-                $data['regionName'],
-                $data['city'],
-                $data['zip'],
-                $data['lat'],
-                $data['lon'],
-                $data['reverse'],
-                $data['mobile'],
-                $data['proxy'],
-                $data['hosting'],
-                $data['query'],
+                $data['status'] ?? 'mock' ,
+                $data['continent'] ?? 'Europe',
+                $data['continentCode'] ?? 'EU',
+                $data['country'] ?? 'France',
+                $data['countryCode'] ?? 'FR',
+                $data['regionName'] ?? 'Paris' ,
+                $data['city'] ?? 'Paris',
+                $data['zip'] ?? '75100',
+                $data['lat'] ?? 40.6951,
+                $data['lon'] ?? 20.325,
+                $data['reverse'] ?? 'unn-156-146-55-226.cdn',
+                $data['mobile'] ?? false,
+                $data['proxy']  ?? false,
+                $data['hosting'] ?? false,
+                $data['query'] ?? '156.146.55.226',
                 $data['valid'] = true
             );
         }

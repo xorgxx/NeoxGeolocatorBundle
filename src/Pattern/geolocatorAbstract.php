@@ -84,6 +84,7 @@
             }
         }
         
+        
         protected function setFilterConnection(){
             $connection    = $this->FILTER["connection"];
             if (!empty($connection) && $this->Geolocation->getStatus() !== "fail" ) {
