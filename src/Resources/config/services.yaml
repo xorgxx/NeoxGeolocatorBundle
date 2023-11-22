@@ -35,6 +35,11 @@ services:
             - '@Symfony\Component\HttpKernel\KernelInterface'
             - '@NeoxGeolocator\NeoxGeolocatorBundle\Pattern\NeoxGeoBagService'
             
+    NeoxGeolocator\NeoxGeolocatorBundle\Pattern\NeoxGeoBagService:
+        arguments:
+            - '@Symfony\Component\HttpFoundation\RequestStack'
+            - '@Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface'
+        
     NeoxGeolocator\NeoxGeolocatorBundle\EventSubscriber\GeoLocatorSubscriber:
         arguments:
             - '@NeoxGeolocator\NeoxGeolocatorBundle\Pattern\GeolocatorFactory'
