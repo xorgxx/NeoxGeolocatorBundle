@@ -4,6 +4,7 @@
     
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
     use Psr\Cache\InvalidArgumentException;
+    use Symfony\Component\Cache\CacheItem;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
     use Symfony\Component\HttpFoundation\RequestStack;
     use Symfony\Component\HttpKernel\KernelInterface;
@@ -174,6 +175,54 @@
                 }
             }
             return false; // Return false if none of the substrings are found
+        }
+        
+        protected function getLimiter(string $name, int $expire = 60): bool {
+            
+            $key = "counter-$name";
+            /**
+             * @var ItemAdapter $Item
+             */
+            $Item2  = $this->cache->get( $key, function (ItemInterface $item) use($expire) {
+                $item->expiresAfter( (int) $expire); // 3600 = 1 hour
+                return 0;
+            });
+            
+            $Item2++;
+            
+            if( $Item2 < 43 ) {
+                
+                /** @var CacheItem $item */
+                $Item       = $this->cache->getItem( $key );
+                $expire     = $Item->getMetadata()['expiry'];
+                $this->cache->delete( "counter" );
+                $interval   = new \DateInterval("PT{$expire}S");
+                $Item2      = $this->cache->get( "counter" , function (ItemInterface $item) use ($expire, $Item2) {
+                    $interval = new \DateTime("@$expire", new \DateTimeZone("Europe/Paris"));
+                    $item->expiresAt( $interval ); // 3600 = 1 hour
+                    return $Item2;
+                });
+                return true;
+            };
+            
+            return false;
+        }
+        
+        protected function buildClass( string $nameService){
+            $className      = "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService;
+            if (class_exists($className)) {
+                // Utilisez la réflexion pour instancier la classe du service
+                $reflectionClass = new \ReflectionClass($className);
+                $serviceInstance = $reflectionClass->newInstance(
+                    $this->router,
+                    $this->parameterBag,
+                    $this->httpClient,
+                    $this->requestStack,
+                    $this->cache,
+                    $this->kernel,
+                );
+                return $serviceInstance;
+            }
         }
         
         protected function getParameter($key): UnitEnum|float|array|bool|int|string|null
