@@ -45,7 +45,7 @@
             // https://api.findip.net/66.228.119.72/?token=xxxxxxxxxx
 
             $currentIp  = $this->getRealIp();
-            $api        = "http://api." . $this->CDN["api_use"] . "/$currentIp/?token=" . $this->CDN['api_key'];
+            $api        = "http://api." . $this->neoxBag->getCdn()["api_use"] . "/$currentIp/?token=" . $this->neoxBag->getCdn()['api_key'];
             // todo: check if this expires !!!
             $response_          = $this->httpClient->request('GET', $api );
             $o                  = json_decode($response_->getContent(), true);

@@ -34,6 +34,8 @@
          */
         private CacheInterface $cache;
         
+        private NeoxGeoBagService $neoxGeoBagService;
+        
         private array $CDN;
         private array $FILTER;
         
@@ -46,21 +48,23 @@
          * @param CacheInterface $cache
          */
         public function __construct(
-            RouterInterface       $router,
-            ParameterBagInterface $parameterBag,
-            HttpClientInterface   $httpClient,
-            RequestStack          $requestStack,
-            CacheInterface        $cache,
-            KernelInterface       $kernel,
+            RouterInterface         $router,
+            ParameterBagInterface   $parameterBag,
+            HttpClientInterface     $httpClient,
+            RequestStack            $requestStack,
+            CacheInterface          $cache,
+            KernelInterface         $kernel,
+            NeoxGeoBagService       $neoxGeoBagService,
         )
         {
             
-            $this->router           = $router;
-            $this->parameterBag     = $parameterBag;
-            $this->httpClient       = $httpClient;
-            $this->requestStack     = $requestStack;
-            $this->cache            = $cache;
-            $this->kernel           = $kernel;
+            $this->router                   = $router;
+            $this->parameterBag             = $parameterBag;
+            $this->httpClient               = $httpClient;
+            $this->requestStack             = $requestStack;
+            $this->cache                    = $cache;
+            $this->kernel                   = $kernel;
+            $this->neoxGeoBagService        = $neoxGeoBagService;
 //            $this->CDN              = $this->getParameter("neox_geolocator.cdn");
 //            $this->FILTER           = $this->getParameter("neox_geolocator.filter");
             
@@ -78,8 +82,9 @@
                 "findip.net"            => "findIpService",
             ];
             
-            $cdnValue       = $this->parameterBag->get('neox_geolocator.cdn')["api_use"];
-            $nameService    = $cdnToServiceMap[$cdnValue] ?? "ipApiService";
+            $neoxGeoBag     = $this->getNeoGeoService()->getneoxBag();
+//            $cdnValue       = $this->parameterBag->get('neox_geolocator.cdn')["api_use"];
+            $nameService    = $cdnToServiceMap[$neoxGeoBag->getCdn()["api_use"]] ?? "ipApiService";
             
             $className      = "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService;
             if (class_exists($className)) {
@@ -92,8 +97,13 @@
                     $this->requestStack,
                     $this->cache,
                     $this->kernel,
+                    $neoxGeoBag
                 );
                 return $serviceInstance;
             }
+        }
+        
+        private function getNeoGeoService(){
+            return new  neoxGeoBagService($this->requestStack, $this->parameterBag);
         }
     }

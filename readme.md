@@ -98,6 +98,8 @@ just need to create route & template to `name_route_unauthorized: "Seo_unauthori
      * @param Request $request
      * @return Response
      */
+     
+    #[NeoxGeoBag( filterLocal: ["RU", "GB"], filterContinents: ["Asia"])]   
     public function unauthorized(Request $request, CacheItemPoolInterface  $adapter): Response
     {
         $session    = $request->getSession();

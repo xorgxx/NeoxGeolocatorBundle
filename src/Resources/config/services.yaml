@@ -33,10 +33,11 @@ services:
             - '@Symfony\Component\HttpFoundation\RequestStack'
             - '@Symfony\Contracts\Cache\CacheInterface'
             - '@Symfony\Component\HttpKernel\KernelInterface'
+            - '@NeoxGeolocator\NeoxGeolocatorBundle\Pattern\NeoxGeoBagService'
             
     NeoxGeolocator\NeoxGeolocatorBundle\EventSubscriber\GeoLocatorSubscriber:
         arguments:
             - '@NeoxGeolocator\NeoxGeolocatorBundle\Pattern\GeolocatorFactory'
             
         tags:
-            - { name: 'kernel.event_listener', event: 'kernel.request', method: 'onKernelRequest' }
+            - { name: kernel.event_subscriber }

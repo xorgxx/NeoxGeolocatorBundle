@@ -49,7 +49,7 @@
             $data   = "";
             if ( $this->getLimiter('ipapi') ) {
                 $currentIp      = $this->getRealIp();
-                $api            = "http://" . $this->CDN["api_use"] . "/json/$currentIp?fields=status,message,continent,continentCode,country,countryCode,regionName,city,zip,lat,lon,reverse,mobile,proxy,hosting,query";
+                $api            = "http://" . $this->neoxBag->getCdn()["api_use"] . "/json/$currentIp?fields=status,message,continent,continentCode,country,countryCode,regionName,city,zip,lat,lon,reverse,mobile,proxy,hosting,query";
                 // todo: check if this expires !!!
                 $response_      = $this->httpClient->request('GET', $api );
                 $data           = $response_->getContent();

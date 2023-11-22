@@ -2,7 +2,9 @@
     
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern;
     
+    use NeoxGeolocator\NeoxGeolocatorBundle\Attribute\NeoxGeoBag;
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Model\neoxBag;
     use Psr\Cache\InvalidArgumentException;
     use Symfony\Component\Cache\CacheItem;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -44,7 +46,8 @@
         
         protected array $CDN;
         protected array $FILTER;
-        protected GeolocationModel $Geolocation;
+        protected GeolocationModel  $Geolocation;
+        protected NeoxBag           $neoxBag;
         
         CONST NAME = "geolocator - ";
         
@@ -62,6 +65,7 @@
             RequestStack          $requestStack,
             CacheInterface        $cache,
             KernelInterface       $kernel,
+            NeoxBag               $neoxBag
         )
         {
             
@@ -71,14 +75,15 @@
             $this->requestStack     = $requestStack;
             $this->cache            = $cache;
             $this->kernel           = $kernel;
-            $this->CDN              = $this->getParameter("neox_geolocator.cdn");
-            $this->FILTER           = $this->getParameter("neox_geolocator.filter");
+            $this->neoxBag          = $neoxBag;
+//            $this->CDN              = $this->neoxBag->getCdn();
+//            $this->FILTER           = $this->neoxBag->getFilterLocal() + $this->neoxBag->getFilterConnection() + $this->neoxBag->getFilterContinents();
             
         }
             
         
         protected function setFilterLocal(){
-            $local    = $this->FILTER["local"];
+            $local    = $this->neoxBag->getFilterLocal();
             if (!empty($local) && $this->Geolocation->getStatus() !== "fail" && !in_array($this->Geolocation->getCountryCode(), $local, true)) {
                 // Send the modified response object to the event this country is not allowed
                 $this->Geolocation->setValid(false);
@@ -87,15 +92,15 @@
         
         
         protected function setFilterConnection(){
-            $connection    = $this->FILTER["connection"];
-            if (!empty($connection) && $this->Geolocation->getStatus() !== "fail" ) {
+            $connection    = $this->neoxBag->getFilterConnection();
+            if (!empty($connection) && $this->Geolocation->getStatus() !== "fail" && $this->Geolocation->isProxy() ) {
                 // Send the modified response object to the event this country is not allowed
-                $this->Geolocation->setValid(!$this->Geolocation->isProxy());
+                $this->Geolocation->setValid(false);
             }
         }
         
         protected function setFilterContinents(){
-            $continents    = $this->FILTER["continents"];
+            $continents    = $this->neoxBag->getFilterContinents();
             if (!empty($continents) && $this->Geolocation->getStatus() !== "fail" && !in_array($this->Geolocation->getContinent(), $continents, true)) {
                 // Send the modified response object to the event this country is not allowed
                 $this->Geolocation->setValid(false);
@@ -103,7 +108,7 @@
         }
         
         protected function setFilterCrawler(){
-            $crawler    = $this->getParameter("neox_geolocator.crawler");
+            $crawler    = $this->neoxBag->getCrawler();
             if (!empty($crawler) && $this->Geolocation->getStatus() !== "fail" && $this->stringContainsSubstringFromArray($this->Geolocation->getReverse(), $crawler) ) {
                 // Send the modified response object to the event this country is not allowed
                 $this->Geolocation->setValid(true);
@@ -124,13 +129,13 @@
             
             // Redis manage storage with expiration !!
             $value  = $this->cache->get( self::NAME . $key, function (ItemInterface $item) {
-                $timer = $this->getParameter('neox_geolocator.timer');
+                $timer = $this->neoxBag->getTimer();
                 $item->expiresAfter( (int) $timer); // 3600 = 1 hour
                 return $this->Geolocator();
             });
             
             if (!$value->isValid()) {
-                $route = $this->getParameter("neox_geolocator.name_route_unauthorized");
+                $route = $this->neoxBag->getNameRouteUnauthorized();
                 return $this->router->generate($route);
             }
             return true;
