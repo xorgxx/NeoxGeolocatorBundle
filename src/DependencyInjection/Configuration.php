@@ -30,6 +30,7 @@ final class Configuration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->children()
             ->scalarNode('ip_local_dev')->defaultValue(null)->end()
+            ->scalarNode('custome_api')->defaultValue(null)->end()
             ->arrayNode('cdn')
                 ->children()
                     ->scalarNode('api_use')->defaultValue("standart")->end()

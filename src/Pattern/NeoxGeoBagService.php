@@ -54,6 +54,7 @@
             $this->neoxBagParams     = $this->parameterBag->get('neox_geolocator');
             $this->neoxBag
                 ->setIpLocalDev($this->neoxBagParams ['ip_local_dev'] ?? null)
+                ->setCustomeApi($this->neoxBagParams ['custome_api'] ?? null)
                 ->setCdn($this->neoxBagParams ['cdn'] ?? null)
                 ->setFilterLocal($this->neoxBagParams ['filter']['local'] ?? [])
                 ->setFilterConnection($this->neoxBagParams ['filter']['connection'] ?? [])

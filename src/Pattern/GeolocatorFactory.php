@@ -75,6 +75,8 @@
          */
         public function getGeolocatorService(): geolocatorAbstract
         {
+            $neoxGeoBag     = $this->getNeoGeoService()->getneoxBag();
+            
             
             $cdnToServiceMap = [
                 "check.getipintel.net"  => "getipintelService",
@@ -82,11 +84,12 @@
                 "findip.net"            => "findIpService",
             ];
             
-            $neoxGeoBag     = $this->getNeoGeoService()->getneoxBag();
+           
 //            $cdnValue       = $this->parameterBag->get('neox_geolocator.cdn')["api_use"];
             $nameService    = $cdnToServiceMap[$neoxGeoBag->getCdn()["api_use"]] ?? "ipApiService";
             
-            $className      = "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService;
+            $className      = $neoxGeoBag->getCustomeApi() ?: "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService;
+            
             if (class_exists($className)) {
                 // Utilisez la réflexion pour instancier la classe du service
                 $reflectionClass = new \ReflectionClass($className);

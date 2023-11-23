@@ -5,6 +5,7 @@
     class neoxBag
     {
         public ?string      $ip_local_dev               = null;
+        public ?string      $custome_api                = null;
         public ?array       $cdn                        = [];
         public ?array       $filterLocal                = [];
         public ?array       $filterConnection           = [];
@@ -22,6 +23,17 @@
         public function setIpLocalDev(?string $ip_local_dev): neoxBag
         {
             $this->ip_local_dev = $ip_local_dev;
+            return $this;
+        }
+        
+        public function getCustomeApi(): ?string
+        {
+            return $this->custome_api;
+        }
+        
+        public function setCustomeApi(?string $custome_api): neoxBag
+        {
+            $this->custome_api = $custome_api;
             return $this;
         }
         
