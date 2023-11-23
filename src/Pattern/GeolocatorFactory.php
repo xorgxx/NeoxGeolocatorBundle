@@ -77,17 +77,14 @@
         {
             $neoxGeoBag     = $this->getNeoGeoService()->getneoxBag();
             
-            
             $cdnToServiceMap = [
                 "check.getipintel.net"  => "getipintelService",
                 "ip-api.com"            => "ipApiService",
                 "findip.net"            => "findIpService",
             ];
             
-           
 //            $cdnValue       = $this->parameterBag->get('neox_geolocator.cdn')["api_use"];
             $nameService    = $cdnToServiceMap[$neoxGeoBag->getCdn()["api_use"]] ?? "ipApiService";
-            
             $className      = $neoxGeoBag->getCustomeApi() ?: "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService;
             
             if (class_exists($className)) {

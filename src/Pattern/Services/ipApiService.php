@@ -22,19 +22,8 @@
             // get geolocation
             $this->Geolocation = $this->getInfoCdn();
             
-            // set filter Local
-            $this->setFilterLocal();
-            
-            // set filter contement
-            $this->setFilterContinents();
-            
-            // set filter Connection
-            $this->setFilterConnection();
-            
-            // set crawler
-            $this->setFilterCrawler();
-            
-//            $this->requestStack->getSession()->set('geolocator', $this->Geolocation);
+            // optimised
+            $this->setFilter();
             
             return $this->Geolocation;
             

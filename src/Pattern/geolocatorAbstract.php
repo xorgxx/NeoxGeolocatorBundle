@@ -80,7 +80,25 @@
 //            $this->FILTER           = $this->neoxBag->getFilterLocal() + $this->neoxBag->getFilterConnection() + $this->neoxBag->getFilterContinents();
             
         }
+        
+        protected function setFilter(){
+            $filter             = array_merge($this->neoxBag->getFilterLocal(), $this->neoxBag->getFilterContinents());
+            $item               = $this->Geolocation->toArray();
             
+            $filteredData = array_filter($item, function ( $itemz ) use ($filter) {
+                return in_array($itemz, $filter );
+            });
+            
+            $filteredCount = count($filteredData);
+            
+            if ($filteredCount === 1) {
+                $this->Geolocation->setValid(false);
+            }
+            
+            $this->setFilterConnection();
+            $this->setFilterCrawler();
+            
+        }
         
         protected function setFilterLocal(){
             $local    = $this->neoxBag->getFilterLocal();
@@ -89,7 +107,6 @@
                 $this->Geolocation->setValid(false);
             }
         }
-        
         
         protected function setFilterConnection(){
             $connection    = $this->neoxBag->getFilterConnection();
