@@ -16,20 +16,22 @@
     {
         public function Geolocator(): geolocationModel
         {
-            
             // get geolocation
             $this->Geolocation = $this->getInfoCdn();
             
             // optimised
             $this->setFilter();
             
-//            $this->requestStack->getSession()->set('geolocator', $this->Geolocation);
-            
             return $this->Geolocation;
-            
-            // TODO: Implement Geolocator() method.
         }
         
+        /**
+         * @throws RedirectionExceptionInterface
+         * @throws ClientExceptionInterface
+         * @throws \JsonException
+         * @throws TransportExceptionInterface
+         * @throws ServerExceptionInterface
+         */
         public function getInfoCdn(): GeolocationModel{
             
             // check ip "http://check.getipintel.net/check.php"
@@ -38,7 +40,7 @@
             $api        = "http://" . $this->neoxBag->getCdn()["api_use"] . "/check.php?ip=$currentIp&contact=Your@contact.xyz&format=json&flags=b";
             // todo: check if this expires !!!
             $response_      = $this->httpClient->request('GET', $api );
-            $o = json_decode($response_->getContent());
+            $o = json_decode($response_->getContent(), true, 512, JSON_THROW_ON_ERROR);
             return GeolocationModel::fromJson($response_->getContent());
         }
         

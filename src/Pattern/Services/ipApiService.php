@@ -18,7 +18,6 @@
     {
         public function Geolocator(): geolocationModel
         {
-            
             // get geolocation
             $this->Geolocation = $this->getInfoCdn();
             
@@ -26,8 +25,6 @@
             $this->setFilter();
             
             return $this->Geolocation;
-            
-            // TODO: Implement Geolocator() method.
         }
         
         public function getInfoCdn(): GeolocationModel{

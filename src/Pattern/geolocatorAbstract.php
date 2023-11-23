@@ -18,6 +18,7 @@
     use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
     use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
     use Symfony\Contracts\HttpClient\HttpClientInterface;
+    use UnitEnum;
     
     Abstract class geolocatorAbstract
     {
@@ -81,15 +82,15 @@
             
         }
         
-        protected function setFilter(){
+        protected function setFilter(): void
+        {
             $filter             = array_merge($this->neoxBag->getFilterLocal(), $this->neoxBag->getFilterContinents());
             $item               = $this->Geolocation->toArray();
             
-            $filteredData = array_filter($item, function ( $itemz ) use ($filter) {
+            $filteredData       = array_filter($item, function ( $itemz ) use ($filter) {
                 return in_array($itemz, $filter );
             });
-            
-            $filteredCount = count($filteredData);
+            $filteredCount      = count($filteredData);
             
             if ($filteredCount === 1) {
                 $this->Geolocation->setValid(false);
@@ -100,7 +101,8 @@
             
         }
         
-        protected function setFilterLocal(){
+        protected function setFilterLocal(): void
+        {
             $local    = $this->neoxBag->getFilterLocal();
             if (!empty($local) && $this->Geolocation->getStatus() !== "fail" && !in_array($this->Geolocation->getCountryCode(), $local, true)) {
                 // Send the modified response object to the event this country is not allowed
@@ -108,7 +110,8 @@
             }
         }
         
-        protected function setFilterConnection(){
+        protected function setFilterConnection(): void
+        {
             $connection    = $this->neoxBag->getFilterConnection();
             if (!empty($connection) && $this->Geolocation->getStatus() !== "fail" && $this->Geolocation->isProxy() ) {
                 // Send the modified response object to the event this country is not allowed
@@ -116,7 +119,8 @@
             }
         }
         
-        protected function setFilterContinents(){
+        protected function setFilterContinents(): void
+        {
             $continents    = $this->neoxBag->getFilterContinents();
             if (!empty($continents) && $this->Geolocation->getStatus() !== "fail" && !in_array($this->Geolocation->getContinent(), $continents, true)) {
                 // Send the modified response object to the event this country is not allowed
@@ -124,7 +128,8 @@
             }
         }
         
-        protected function setFilterCrawler(){
+        protected function setFilterCrawler(): void
+        {
             $crawler    = $this->neoxBag->getCrawler();
             if (!empty($crawler) && $this->Geolocation->getStatus() !== "fail" && $this->stringContainsSubstringFromArray($this->Geolocation->getReverse(), $crawler) ) {
                 // Send the modified response object to the event this country is not allowed
@@ -190,9 +195,10 @@
             return $ip;
         }
         
-        private function stringContainsSubstringFromArray($mainString, $substringsArray) {
+        private function stringContainsSubstringFromArray($mainString, $substringsArray): bool
+        {
             foreach ($substringsArray as $substring) {
-                if (strpos($mainString, $substring) !== false) {
+                if (str_contains($mainString, $substring)) {
                     return true; // Return true if any substring is found
                 }
             }
