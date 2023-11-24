@@ -53,11 +53,13 @@
         CONST NAME = "geolocator - ";
         
         /**
-         * @param RouterInterface $router
+         * @param RouterInterface       $router
          * @param ParameterBagInterface $parameterBag
-         * @param HttpClientInterface $httpClient
-         * @param RequestStack $requestStack
-         * @param CacheInterface $cache
+         * @param HttpClientInterface   $httpClient
+         * @param RequestStack          $requestStack
+         * @param CacheInterface        $cache
+         * @param KernelInterface       $kernel
+         * @param neoxBag               $neoxBag
          */
         public function __construct(
             RouterInterface       $router,
@@ -149,9 +151,16 @@
             // cache to optimize ux : check very 1 hour security raison
             $key    = $this->requestStack->getSession()->getId();
             
+            // First check have no id session yet so we nock one to pass, expire will be very short
+            // lake this next clic anyware be check againe !!! this time id session will be create
+            $timer  = $this->neoxBag->getTimer();
+            if ( !$key ) {
+                $key    = uniqid("pass_", true);
+                $timer  = 5;
+            }
+       
             // Redis manage storage with expiration !!
-            $value  = $this->cache->get( self::NAME . $key, function (ItemInterface $item) {
-                $timer = $this->neoxBag->getTimer();
+            $value  = $this->cache->get( self::NAME . $key, function (ItemInterface $item) use ($timer) {
                 $item->expiresAfter( (int) $timer); // 3600 = 1 hour
                 return $this->Geolocator();
             });
@@ -160,6 +169,7 @@
                 $route = $this->neoxBag->getNameRouteUnauthorized();
                 return $this->router->generate($route);
             }
+            
             return true;
         }
         
