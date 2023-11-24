@@ -183,7 +183,7 @@
             // in dev mode mock
             if ( $this->kernel->getEnvironment() === 'dev') {
                 // for test  Bulgary "156.146.55.226"
-                return $this->getParameter("neox_geolocator.ip_local_dev") ;
+                return $this->neoxBag->getIpLocalDev() ;
             }
             
             $request    = $this->requestStack->getCurrentRequest();
