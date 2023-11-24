@@ -3,6 +3,7 @@
   "description": "Neox geolocator bundle for Symfony",
   "license": "proprietary",
   "minimum-stability": "stable",
+  "prefer-stable": true,
   "authors": [
     {
       "name": "Xorg",
