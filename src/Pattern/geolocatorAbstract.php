@@ -79,7 +79,7 @@
             $this->neoxBag          = $neoxBag;
 //            $this->CDN              = $this->neoxBag->getCdn();
 //            $this->FILTER           = $this->neoxBag->getFilterLocal() + $this->neoxBag->getFilterConnection() + $this->neoxBag->getFilterContinents();
-            
+        
         }
         
         protected function setFilter(): void
@@ -185,28 +185,34 @@
         protected function getRealIp( ): ?string
         {
             // in dev mode mock
-            if ( $this->kernel->getEnvironment() === 'dev') {
-                // for test  Bulgary "156.146.55.226"
-                return $this->getParameter("neox_geolocator.ip_local_dev") ;
-            }
+//            if ( $this->kernel->getEnvironment() === 'dev') {
+//                // for test  Bulgary "156.146.55.226"
+//                return $this->neoxBag->getIpLocalDev() ;
+//            }
             
             $request    = $this->requestStack->getCurrentRequest();
             $ip         = $request->getClientIp();
             
-            if ($request->headers->has('X-Real-IP')) {
-                return $request->headers->get('X-Real-IP');
+            if (!$request) return null; // or throw an exception
+            
+            $ip         = $request->getClientIp();
+            
+            if ($ip && filter_var($ip, FILTER_VALIDATE_IP) && $ip != '127.0.0.1') return $ip;
+            
+            $ipHeaders = ['X-Real-IP', 'CF-Connecting-IP', 'X-Forwarded-For'];
+            foreach ($ipHeaders as $header) {
+                if ($request->headers->has($header)) {
+                    $ip = $header === 'X-Forwarded-For' ?
+                        trim(explode(',', $request->headers->get($header), 2)[0]) :
+                        $request->headers->get($header);
+                    
+                    if ($ip && filter_var($ip, FILTER_VALIDATE_IP)) {
+                        return $ip;
+                    }
+                }
             }
             
-            if ($request->headers->has('CF-Connecting-IP')) {
-                $ip = $request->headers->get('CF-Connecting-IP');
-            }
-            
-            if ($request->headers->has('X-Forwarded-For')) {
-                $ips = explode(',', $request->headers->get('X-Forwarded-For'), 2);
-                $ip = trim($ips[0]); // The left-most IP address is the original client
-            }
-            
-            return $ip;
+            return $this->neoxBag->getIpLocalDev();
         }
         
         private function stringContainsSubstringFromArray($mainString, $substringsArray): bool
