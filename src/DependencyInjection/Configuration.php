@@ -31,6 +31,7 @@ final class Configuration implements ConfigurationInterface
             ->children()
             ->scalarNode('ip_local_dev')->defaultValue(null)->end()
             ->scalarNode('custome_api')->defaultValue(null)->end()
+            ->scalarNode('check_vpn')->defaultValue(null)->end()
             ->arrayNode('cdn')
                 ->children()
                     ->scalarNode('api_use')->defaultValue("standart")->end()
@@ -57,7 +58,6 @@ final class Configuration implements ConfigurationInterface
             ->arrayNode('crawler')->scalarPrototype()->end()->end()
             ->scalarNode('name_route_unauthorized')->defaultValue('Seo_unauthorized')->end()
             ->scalarNode('timer')->defaultValue(3600)->end()
-            ->scalarNode('check_vpn')->defaultValue(false)->end()
             ->end()
         ;
 

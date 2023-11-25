@@ -13,7 +13,7 @@
         public ?array       $crawler                    = [];
         public ?string      $name_route_unauthorized    = null;
         public ?int         $timer                      = null;
-        public ?bool        $chec_vpn                   = null;
+        public ?string      $check_vpn                   = null;
         
         public function getIpLocalDev(): ?string
         {
@@ -114,14 +114,14 @@
             return $this;
         }
         
-        public function getChecVpn(): ?bool
+        public function getCheckVpn(): ?string
         {
-            return $this->chec_vpn;
+            return $this->check_vpn;
         }
         
-        public function setChecVpn(?bool $chec_vpn): neoxBag
+        public function setCheckVpn(?string $check_vpn): neoxBag
         {
-            $this->chec_vpn = $chec_vpn;
+            $this->check_vpn = $check_vpn;
             return $this;
         }
         

@@ -62,7 +62,7 @@
                 ->setCrawler($this->neoxBagParams ['crawler'] ?? [])
                 ->setNameRouteUnauthorized($this->neoxBagParams ['name_route_unauthorized'] ?? null)
                 ->setTimer($this->neoxBagParams ['timer'] ?? null)
-                ->setChecVpn($this->neoxBagParams ['check_vpn'] ?? null)
+                ->setCheckVpn($this->neoxBagParams ['check_vpn'] ?? null)
             ;
         }
         
