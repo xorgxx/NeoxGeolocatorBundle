@@ -173,11 +173,20 @@
             return true;
         }
         
-        protected function senApi( string $api ){
-            return $this->httpClient->request('GET', $api, ['timeout' => 20]);
+        /**
+         * @throws TransportExceptionInterface
+         */
+        protected function senApi(string $api ){
+            try {
+                $response_  = $this->httpClient->request('GET', $api, ['timeout' => 20]);
+                return $response_->getContent();
+            } catch (\Exception $e) {
+                return null;
+            }
+      
         }
         
-        /**
+        /**yr
          * @throws ServerExceptionInterface
          * @throws RedirectionExceptionInterface
          * @throws ClientExceptionInterface

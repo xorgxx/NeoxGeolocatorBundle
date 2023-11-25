@@ -234,9 +234,12 @@
             return $this;
         }
         
-        public static function fromJson($json)
+        /**
+         * @throws \JsonException
+         */
+        public static function fromJson($json): GeolocationModel
         {
-            $data = json_decode($json, true);
+            $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
             
 //            if ($data === 'fail' || $data === '') {
 //                $data['status']        = 'mock';

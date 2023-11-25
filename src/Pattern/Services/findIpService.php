@@ -40,24 +40,23 @@
             $currentIp      = $this->getRealIp();
             $api            = "http://api." . $this->neoxBag->getCdn()["api_use"] . "/$currentIp/?token=" . $this->neoxBag->getCdn()['api_key'];
             // todo: check if this expires !!!
-            $response_      = $this->senApi( $api );
-            $o              = json_decode($response_->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            $data  = $this->senApi( $api );
             
             $geolocationModel   = new GeolocationModel();
             $geolocationModel->setstatus('success')               // = ;
-                ->setcontinent($o["continent"]["names"]["fr"])          // = 'Europe';
-                ->setcontinentCode($o["continent"]["code"])             // = 'EU';
-                ->setcountry($o["country"]["names"]["en"])              // = 'France';
-                ->setcountryCode($o["country"]["iso_code"])             // = 'FR';
-                ->setregionName($o["subdivisions"][0]["names"]["en"])   // = 'Paris';
-                ->setcity($o["city"]["names"]["en"])                    // = 'Paris';
-                ->setzip($o["postal"]["code"])                          // = '75000';
-                ->setlat($o["location"]["latitude"])                    // = 40.6951;
-                ->setlon($o["location"]["longitude"])                   // = 20.325;
-                ->setreverse($o["traits"]["isp"])                       // = 'unn-156-146-55-226.cdn';
+                ->setcontinent($data["continent"]["names"]["fr"] ?? 'Europe' )          // = 'Europe';
+                ->setcontinentCode($data["continent"]["code"] ?? 'EU')             // = 'EU';
+                ->setcountry($data["country"]["names"]["en"] ?? 'France')              // = 'France';
+                ->setcountryCode($data["country"]["iso_code"] ?? 'FR')             // = 'FR';
+                ->setregionName($data["subdivisions"][0]["names"]["en"] ?? 'Paris')   // = 'Paris';
+                ->setcity($data["city"]["names"]["en"] ?? 'Paris')                    // = 'Paris';
+                ->setzip($data["postal"]["code"] ?? '75000')                          // = '75000';
+                ->setlat($data["location"]["latitude"] ?? 40.6951)                    // = 40.6951;
+                ->setlon($data["location"]["longitude"] ?? 20.325)                   // = 20.325;
+                ->setreverse($data["traits"]["isp"] ?? 'unn-156-146-55-226.cdn')                       // = 'unn-156-146-55-226.cdn';
                 ->setmobile('nc')                                 // = false;
-                ->setproxy(($o["traits"]["connection_type"] == 'Corporate' ? true : false))     // = false;
-                ->sethosting(($o["traits"]["user_type"] == 'hosting' ? true : false))           // = false;
+                ->setproxy($data["traits"]["connection_type"] === 'Corporate')     // = false;
+                ->sethosting($data["traits"]["user_type"] === 'hosting')           // = false;
                 ->setquery($currentIp)           // = '156.146.55.226';
                 ->setvalid(true)            // = true;
             ;
