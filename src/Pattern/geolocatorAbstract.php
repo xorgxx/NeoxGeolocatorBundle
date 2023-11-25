@@ -49,17 +49,15 @@
         protected array $FILTER;
         protected GeolocationModel  $Geolocation;
         protected NeoxBag           $neoxBag;
-        
+        private $ffff;
         CONST NAME = "geolocator - ";
         
         /**
-         * @param RouterInterface       $router
+         * @param RouterInterface $router
          * @param ParameterBagInterface $parameterBag
-         * @param HttpClientInterface   $httpClient
-         * @param RequestStack          $requestStack
-         * @param CacheInterface        $cache
-         * @param KernelInterface       $kernel
-         * @param neoxBag               $neoxBag
+         * @param HttpClientInterface $httpClient
+         * @param RequestStack $requestStack
+         * @param CacheInterface $cache
          */
         public function __construct(
             RouterInterface       $router,
@@ -161,6 +159,8 @@
        
             // Redis manage storage with expiration !!
             $value  = $this->cache->get( self::NAME . $key, function (ItemInterface $item) use ($timer) {
+                $geolocation    = $this->Geolocator();
+                $timer          = $geolocation->getStatus() === "fail" ? 5: $timer;
                 $item->expiresAfter( (int) $timer); // 3600 = 1 hour
                 return $this->Geolocator();
             });
@@ -183,7 +183,7 @@
             // in dev mode mock
             if ( $this->kernel->getEnvironment() === 'dev') {
                 // for test  Bulgary "156.146.55.226"
-                return $this->neoxBag->getIpLocalDev() ;
+                return $this->getParameter("neox_geolocator.ip_local_dev") ;
             }
             
             $request    = $this->requestStack->getCurrentRequest();
