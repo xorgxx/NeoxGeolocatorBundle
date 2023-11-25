@@ -154,15 +154,15 @@
             $timer  = $this->neoxBag->getTimer();
             if ( !$key ) {
                 $key    = uniqid("pass_", true);
-                $timer  = 5;
+                $timer  = 10;
             }
        
             // Redis manage storage with expiration !!
             $value  = $this->cache->get( self::NAME . $key, function (ItemInterface $item) use ($timer) {
                 $geolocation    = $this->Geolocator();
-                $timer          = $geolocation->getStatus() === "fail" ? 5: $timer;
+                $timer          = $geolocation->getStatus() === "fail" ? 10 : $timer;
                 $item->expiresAfter( (int) $timer); // 3600 = 1 hour
-                return $this->Geolocator();
+                return $geolocation;
             });
             
             if (!$value->isValid()) {
