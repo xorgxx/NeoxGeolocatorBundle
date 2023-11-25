@@ -40,7 +40,7 @@
             $currentIp      = $this->getRealIp();
             $api            = "http://api." . $this->neoxBag->getCdn()["api_use"] . "/$currentIp/?token=" . $this->neoxBag->getCdn()['api_key'];
             // todo: check if this expires !!!
-            $response_      = $this->httpClient->request('GET', $api, ['timeout' => 5]);
+            $response_      = $this->senApi( $api );
             $o              = json_decode($response_->getContent(), true, 512, JSON_THROW_ON_ERROR);
             
             $geolocationModel   = new GeolocationModel();
