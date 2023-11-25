@@ -27,6 +27,13 @@
             return $this->Geolocation;
         }
         
+        /**
+         * @throws TransportExceptionInterface
+         * @throws ServerExceptionInterface
+         * @throws RedirectionExceptionInterface
+         * @throws ClientExceptionInterface
+         * @throws \JsonException
+         */
         public function getInfoCdn(): GeolocationModel{
             
             // check ip
@@ -40,10 +47,10 @@
                 $data  = $this->senApi( $api );
                 
                 return GeolocationModel::fromJson($data);
-            }else{
-                /** @var geolocatorAbstract $class */
-                $class = $this->buildClass("findIpService");
-                return  $class->Geolocator();
             }
+            
+            /** @var geolocatorAbstract $class */
+            $class = $this->buildClass("findIpService");
+            return  $class->Geolocator();
         }
     }

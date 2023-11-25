@@ -176,7 +176,8 @@
         /**
          * @throws TransportExceptionInterface
          */
-        protected function senApi(string $api ){
+        protected function senApi(string $api ): ?string
+        {
             try {
                 $response_  = $this->httpClient->request('GET', $api, ['timeout' => 20]);
                 return $response_->getContent();
