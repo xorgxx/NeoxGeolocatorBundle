@@ -174,7 +174,7 @@
         }
         
         protected function senApi( string $api ){
-            return $this->httpClient->request('GET', $api, ['timeout' => 20]);
+            return $this->httpClient->request('GET', $api); #, ['timeout' => 20]
         }
         
         /**
