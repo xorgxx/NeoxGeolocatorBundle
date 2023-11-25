@@ -37,11 +37,11 @@
             // check ip 
             // https://api.findip.net/66.228.119.72/?token=xxxxxxxxxx
 
-            $currentIp  = $this->getRealIp();
-            $api        = "http://api." . $this->neoxBag->getCdn()["api_use"] . "/$currentIp/?token=" . $this->neoxBag->getCdn()['api_key'];
+            $currentIp      = $this->getRealIp();
+            $api            = "http://api." . $this->neoxBag->getCdn()["api_use"] . "/$currentIp/?token=" . $this->neoxBag->getCdn()['api_key'];
             // todo: check if this expires !!!
-            $response_          = $this->httpClient->request('GET', $api );
-            $o                  = json_decode($response_->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            $response_      = $this->httpClient->request('GET', $api, ['timeout' => 5]);
+            $o              = json_decode($response_->getContent(), true, 512, JSON_THROW_ON_ERROR);
             
             $geolocationModel   = new GeolocationModel();
             $geolocationModel->setstatus('success')               // = ;

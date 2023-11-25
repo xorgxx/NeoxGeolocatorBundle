@@ -36,10 +36,10 @@
             
             // check ip "http://check.getipintel.net/check.php"
            // http://check.getipintel.net/check.php?ip=66.228.119.72&contact=dede@aol.com&format=json&flags=b
-            $currentIp  = $this->getRealIp();
-            $api        = "http://" . $this->neoxBag->getCdn()["api_use"] . "/check.php?ip=$currentIp&contact=Your@contact.xyz&format=json&flags=b";
+            $currentIp      = $this->getRealIp();
+            $api            = "http://" . $this->neoxBag->getCdn()["api_use"] . "/check.php?ip=$currentIp&contact=Your@contact.xyz&format=json&flags=b";
             // todo: check if this expires !!!
-            $response_      = $this->httpClient->request('GET', $api );
+            $response_      = $this->httpClient->request('GET', $api, ['timeout' => 5]);
             $o = json_decode($response_->getContent(), true, 512, JSON_THROW_ON_ERROR);
             return GeolocationModel::fromJson($response_->getContent());
         }
