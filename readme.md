@@ -84,7 +84,7 @@ It set automatique but you can custom (by default)
         
       name_route_unauthorized: "Seo_unauthorized"
       timer: 10
-      check_vpn: false
+      check_vpn: "seo_check_vpn" >>> name route to redirect when detect no id session yet 
 ```
 ## How to use ?
  * Well it pretty match all !!
@@ -174,6 +174,22 @@ just need to create route & template to `name_route_unauthorized: "Seo_unauthori
     {% endblock %}
 ````
 
+Exemple twig check_vpn 
+
+````php
+    .....
+    
+    {% block javascripts  %}
+        <script>
+         // Wait 0.5 seconds (500 milliseconds) then redirect
+            setTimeout(function() {
+                window.location.href = "/";
+            }, 500);
+        </script>
+   
+    {% endblock %}
+
+````
 ## Advanced Usage
 * you have your onwn provider service to get geolocation ? no propblem :
 
