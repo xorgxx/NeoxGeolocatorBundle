@@ -154,7 +154,7 @@
             $timer  = $this->neoxBag->getTimer();
             if ( !$key ) {
                 $key    = uniqid("pass_", true);
-                $timer  = 10;
+                $timer  = 5;
             }
        
             // Redis manage storage with expiration !!
@@ -174,7 +174,7 @@
         }
         
         protected function senApi( string $api ){
-            return $this->httpClient->request('GET', $api); #, ['timeout' => 20]
+            return $this->httpClient->request('GET', $api, ['timeout' => 20]);
         }
         
         /**
@@ -193,12 +193,12 @@
             $request    = $this->requestStack->getCurrentRequest();
             $ip         = $request->getClientIp();
             
-            if ($request->headers->has('CF-Connecting-IP')) {
-                $ip = $request->headers->get('CF-Connecting-IP');
-            }
-            
             if ($request->headers->has('X-Real-IP')) {
                 return $request->headers->get('X-Real-IP');
+            }
+            
+            if ($request->headers->has('CF-Connecting-IP')) {
+                $ip = $request->headers->get('CF-Connecting-IP');
             }
             
             if ($request->headers->has('X-Forwarded-For')) {
