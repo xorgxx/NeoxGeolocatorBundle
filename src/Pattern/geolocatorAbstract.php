@@ -223,66 +223,33 @@
             return $ip;
         }
         
-        private function stringContainsSubstringFromArray($mainString, $substringsArray): bool
+        private function stringContainsSubstringFromArray(string $mainString, array $substringsArray): bool
         {
-            foreach ($substringsArray as $substring) {
-                if (str_contains($mainString, $substring)) {
-                    return true; // Return true if any substring is found
-                }
-            }
-            return false; // Return false if none of the substrings are found
+            return array_reduce($substringsArray, static function(bool $carry, string $substring) use ($mainString): bool {
+                return $carry || str_contains($mainString, $substring);
+            }, false);
         }
         
         /**
-         * @throws InvalidArgumentException
+         * @throws \Exception
          */
-//        protected function getLimiter(string $name, int $expire = 60): bool {
-//
-//            $key    = self::COUNTNAME . $name;
-//            $Item2  = $this->cache->get( $key, function (ItemInterface $item) use($expire) {
-//                $item->expiresAfter( (int) $expire); // 3600 = 1 hour
-//                return 0;
-//            });
-//
-//            $Item2++;
-//
-//            if( $Item2 < 43 ) {
-//
-//                /** @var CacheItem $item */
-//                $Item       = $this->cache->getItem( $key );
-//                $expire     = $Item->getMetadata()['expiry'];
-//                $this->cache->delete( "counter" );
-//                $Item2      = $this->cache->get( $key, function (ItemInterface $item) use ($expire, $Item2) {
-//                    $interval = new \DateTime("@$expire", new \DateTimeZone("Europe/Paris"));
-//                    $item->expiresAt( $interval ); // 3600 = 1 hour
-//                    return $Item2;
-//                });
-//                return true;
-//            };
-//
-//            return false;
-//        }
-//
-        /**
-         * @throws \ReflectionException
-         */
-        protected function buildClass(string $nameService){
-            $className      = "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService;
-            if (class_exists($className)) {
-                // Utilisez la réflexion pour instancier la classe du service
-                $reflectionClass = new \ReflectionClass($className);
-                $serviceInstance = $reflectionClass->newInstance(
-                    $this->router,
-                    $this->parameterBag,
-                    $this->httpClient,
-                    $this->requestStack,
-                    $this->cache,
-                    $this->kernel,
-                );
-                return $serviceInstance;
+        public function buildClass(string $nameService) : object
+        {
+            $className = "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService;
+            if (! class_exists($className)) {
+                throw new \Exception("Service class '{$className}' does not exist.");
             }
+            
+            return new $className(
+                $this->router,
+                $this->parameterBag,
+                $this->httpClient,
+                $this->requestStack,
+                $this->cache,
+                $this->kernel
+            );
         }
-        
+
         protected function getParameter($key): UnitEnum|float|array|bool|int|string|null
         {
             return $this->parameterBag->get($key);

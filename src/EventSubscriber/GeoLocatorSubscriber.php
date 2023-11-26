@@ -50,26 +50,61 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
 //        }
 //    }
     
+//    public function onKernelController(ControllerArgumentsEvent $event): void
+//    {
+//        // don't do anything if it's not the master request
+//        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType()) return;
+//
+//        // This is the main query
+//        $controller         = $event->getRequest()->attributes->get('_controller');
+//        $redirectRequired   = $event->getRequest()->server->get('REDIRECT_URL') === "/unauthorized";
+//        if ( !$this->isProfilerController($controller) && !$redirectRequired ) {
+//            $nameRoute		= $event->getRequest()->get('_route');
+//            if (!$this->containsKeyword($nameRoute, ['profile', '_wd'])) {
+//                $Geolocator    = $this->geolocatorFactory->getGeolocatorService()->checkAuthorize();
+//                if ( $Geolocator !== true && $nameRoute !== "Seo_unauthorized") {
+//                    $response = new RedirectResponse($Geolocator);
+//                    $event->setController(function () use ($response) {
+//                        return $response;
+//                    });
+//                }
+//            }
+//        }
+//    }
+//
     public function onKernelController(ControllerArgumentsEvent $event): void
     {
-        // don't do anything if it's not the master request
-        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType()) return;
-        
-        // This is the main query
-        $controller         = $event->getRequest()->attributes->get('_controller');
-        $redirectRequired   = $event->getRequest()->server->get('REDIRECT_URL') === "/unauthorized";
-        if ( !$this->isProfilerController($controller) && !$redirectRequired ) {
-            $nameRoute		= $event->getRequest()->get('_route');
-            if (!$this->containsKeyword($nameRoute, ['profile', '_wd'])) {
-                $Geolocator    = $this->geolocatorFactory->getGeolocatorService()->checkAuthorize();
-                if ( $Geolocator !== true && $nameRoute !== "Seo_unauthorized") {
-                    $response = new RedirectResponse($Geolocator);
-                    $event->setController(function () use ($response) {
-                        return $response;
-                    });
-                }
-            }
+        // Early return if it's not the master request
+        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType()) {
+            return;
         }
+        
+        $request            = $event->getRequest();
+        $controller         = $request->attributes?->get('_controller');
+        $redirectRequired   = $request->server?->get('REDIRECT_URL') === "/unauthorized";
+        
+        // Early return if the controller is a profiler controller or a redirect is required
+        if ($this->isProfilerController($controller) || $redirectRequired) {
+            return;
+        }
+        
+        $nameRoute          = $request->get('_route');
+        $excludedRoutes     = ['profile', '_wd'];
+        
+        // Early return if the nameRoute doesn't contain any of the excluded keywords
+        if ($this->containsKeyword($nameRoute, $excludedRoutes)) {
+            return;
+        }
+        
+        $geolocator         = $this->geolocatorFactory->getGeolocatorService()->checkAuthorize();
+        
+        // Early return if no redirection is required
+        if ($geolocator === true || $nameRoute === "Seo_unauthorized") {
+            return;
+        }
+        
+        $response           = new RedirectResponse($geolocator);
+        $event->setController(fn() => $response);
     }
     
     private function isProfilerController($controller): bool
@@ -77,15 +112,21 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         return str_starts_with($controller, 'web_profiler.controller.profiler::');
     }
     
-    private function containsKeyword($haystack, array $keywords)
+    private function containsKeyword($haystack, array $keywords): bool
     {
-        foreach ($keywords as $keyword) {
-            if (strpos($haystack, $keyword) !== false) {
-                return true;
-            }
-        }
-        return false;
+        return array_reduce($keywords, static function (bool $carry, string $keyword) use ($haystack): bool {
+            return $carry || strpos($haystack, $keyword) !== false;
+        }, false);
     }
+//    private function containsKeyword($haystack, array $keywords)
+//    {
+//        foreach ($keywords as $keyword) {
+//            if (strpos($haystack, $keyword) !== false) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
     
     public static function getSubscribedEvents(): array
     {
