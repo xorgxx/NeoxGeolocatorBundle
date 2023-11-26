@@ -151,14 +151,19 @@
             // cache to optimize ux : check very 1 hour security raison
             // First check have no id session yet so we nock one to pass, expire will be very short
             // lake this next clic anyware be check againe !!! this time id session will be create
-            $session = $this->requestStack->getSession();
+            $session = $this->requestStack->getSession()->getId();
 //            if (!$session->isStarted()) $session->start();
-            $key    = $session->getId();
+            $timer  = $this->neoxBag->getTimer();
             
+            if ( !$session ) {
+                $session    = uniqid("pass_", true);
+                $timer  = 2;
+//                return $this->router->generate($this->neoxBag->getCheckVpn());
+            }
             // Redis manage storage with expiration !!
-            $value  = $this->cache->get( self::NAME . $key, function (ItemInterface $item)  {
+            $value  = $this->cache->get( self::NAME . $session, function (ItemInterface $item) use ($timer)  {
                 $geolocation    = $this->Geolocator();
-                $timer          = $geolocation->getStatus() === self::FAIL ? 10 : $this->neoxBag->getTimer();
+                $timer          = $geolocation->getStatus() === self::FAIL ? 10 : $timer;
                 $item->expiresAfter( (int) $timer); // 3600 = 1 hour
                 return $geolocation;
             });
