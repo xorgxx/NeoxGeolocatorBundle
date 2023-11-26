@@ -151,9 +151,10 @@
             // cache to optimize ux : check very 1 hour security raison
             // First check have no id session yet so we nock one to pass, expire will be very short
             // lake this next clic anyware be check againe !!! this time id session will be create
-            if (!$this->requestStack->getSession()->isStarted()) $this->requestStack->getSession()->start();
+            $session = $this->requestStack->getCurrentRequest()->getSession();
+            if (!$session->isStarted()) $session->start();
             
-            $key    = $this->requestStack->getSession()->getId();
+            $key    = $session->getId();
             
             // Redis manage storage with expiration !!
             $value  = $this->cache->get( self::NAME . $key, function (ItemInterface $item)  {
