@@ -152,15 +152,12 @@
             // First check have no id session yet so we nock one to pass, expire will be very short
             // lake this next clic anyware be check againe !!! this time id session will be create
             $this->requestStack->getSession()->set("geo","id");
-            $session = $this->requestStack->getSession()->getId();
-//            if (!$session->isStarted()) $session->start();
-            $timer  = $this->neoxBag->getTimer();
+            $session    = $this->requestStack->getSession()->getId();
+
+            $timer      = $this->neoxBag->getTimer();
             if ( !$session ) {
-//                $route = $this->neoxBag->getNameRouteUnauthorized();
-//                return $this->router->generate($route);
                 $session    = uniqid("pass_", true);
                 $timer      = 30;
-//                return $this->router->generate($this->neoxBag->getCheckVpn());
             }
             // Redis manage storage with expiration !!
             $value  = $this->cache->get( self::NAME . $session, function (ItemInterface $item) use ($timer)  {
