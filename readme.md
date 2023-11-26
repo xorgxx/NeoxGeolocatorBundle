@@ -128,46 +128,49 @@ just need to create route & template to `name_route_unauthorized: "Seo_unauthori
             <div class="slider-inner">
                 <div class="vertical-middle">
     
-                <div class="container-fluid clearfix vertical-middle" style="z-index: 6">
-                    <div class="heading-block center topmargin nobottomborder">
-    
-                        <i style="line-height:unset !important;"  class="fa-2xl fi fi-{{ Geolocator.countryCode|lower == 'en' ? 'gb' : Geolocator.countryCode|lower }}"></i>
-                        {% if Geolocator.valid %}
-                            <h1>{{ 'unauthorized.title'|trans }} </h1>
-                            <span><i class="{{ Geolocator.valid ? 'text-success' : 'text-danger' }} fa-solid {{ Geolocator.valid ? 'fa-check-square' : 'fa-window-close'}}"></i> <strong>{{ Geolocator.country }}</strong>, {{ Geolocator.city }}</span>
-    
-                        {% else %}
-                            <h1>{{ 'unauthorized.fail.title'|trans }} </h1>
-                            <span><i class="{{ Geolocator.valid ? 'text-success' : 'text-danger' }} fa-solid {{ Geolocator.valid ? 'fa-check-square' : 'fa-window-close'}}"></i> <strong>{{ Geolocator.country }}</strong>, {{ Geolocator.city }}</span>
-                            {% if Geolocator.proxy|default(0) %}
-                                <span><i class="{{ Geolocator.proxy|default(0) ? 'text-danger' : 'text-success' }} fa-solid {{ Geolocator.proxy|default(0) ? 'fa-window-close' : 'fa-check-square' }}"></i> Proxy / Vpn / Tor : {{ Geolocator.proxy|default(0) ? 'Detecté !' : ' - ' }}</span>
-                            {% endif %}
-                            <span>{{ 'unauthorized.fail.subtitle'|trans }}</span>
-    
-                            <div class="row justify-content-center col-mb-50">
-                                <div class="col-sm-6 col-lg-4">
-                                </div>
-    
-                                <div class="col-sm-6 col-lg-4">
-                                    <div class="feature-box fbox-center fbox-light fbox-plain">
-                                        <div class="fbox-icon">
-                                            <a href="#"><i class="icon-time"></i></a>
-                                        </div>
-                                        <div class="fbox-content">
-                                            <h3>{{ 'unauthorized.title-time'|trans |raw }}</h3>
-                                            <p>{{ 'unauthorized.subtitle-time'|trans |raw }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-    
-                                <div class="col-sm-6 col-lg-4">
-                                </div>
-                            </div>
-                        {% endif %}
-                        <small>- {{ timer|format_datetime('short', timezone='Europe/Paris') }} -</small>
-                    </div>
-    
-                </div>   
+                	<div class="container-fluid clearfix vertical-middle" style="z-index: 6">
+					<div class="heading-block center topmargin nobottomborder">
+
+						{% if Geolocator is not null %}
+							<i style="line-height:unset !important;"
+							   class="fa-2xl fi fi-{{ Geolocator.countryCode|lower == 'en' ? 'gb' : Geolocator.countryCode|lower }}"></i>
+							{% if Geolocator.valid %}
+								<h1>{{ 'unauthorized.title'|trans }} </h1>
+								<span><i class="{{ Geolocator.valid ? 'text-success' : 'text-danger' }} fa-solid {{ Geolocator.valid ? 'fa-check-square' : 'fa-window-close' }}"></i> <strong>{{ Geolocator.country }}</strong>, {{ Geolocator.city }}</span>
+
+							{% else %}
+								<h1>{{ 'unauthorized.fail.title'|trans }} </h1>
+								<span><i class="{{ Geolocator.valid ? 'text-success' : 'text-danger' }} fa-solid {{ Geolocator.valid ? 'fa-check-square' : 'fa-window-close' }}"></i> <strong>{{ Geolocator.country }}</strong>, {{ Geolocator.city }}</span>
+								{% if Geolocator.proxy|default(0) %}
+									<span><i class="{{ Geolocator.proxy|default(0) ? 'text-danger' : 'text-success' }} fa-solid {{ Geolocator.proxy|default(0) ? 'fa-window-close' : 'fa-check-square' }}"></i> Proxy / Vpn / Tor : {{ Geolocator.proxy|default(0) ? 'Detecté !' : ' - ' }}</span>
+								{% endif %}
+								<span>{{ 'unauthorized.fail.subtitle'|trans }}</span>
+
+								<div class="row justify-content-center col-mb-50">
+									<div class="col-sm-6 col-lg-4">
+									</div>
+
+									<div class="col-sm-6 col-lg-4">
+										<div class="feature-box fbox-center fbox-light fbox-plain">
+											<div class="fbox-icon">
+												<a href="#"><i class="icon-time"></i></a>
+											</div>
+											<div class="fbox-content">
+												<h3>{{ 'unauthorized.title-time'|trans |raw }}</h3>
+												<p>{{ 'unauthorized.subtitle-time'|trans |raw }}</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							{% endif %}
+							<small>- {{ timer|format_datetime('short', timezone='Europe/Paris') }} -</small>
+
+						{% else %}
+							<span><i class="text-danger fa-solid fa-window-close"></i> Proxy / Vpn / Tor : Detecté !</span>
+						{% endif %}
+					</div>
+
+				</div>
             </div>
             </div>
         </section>

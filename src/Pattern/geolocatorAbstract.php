@@ -45,14 +45,14 @@
          */
         protected CacheInterface $cache;
         
-        protected array $CDN;
-        protected array $FILTER;
+        protected array             $CDN;
+        protected array             $FILTER;
         protected GeolocationModel  $Geolocation;
         protected NeoxBag           $neoxBag;
-        private $ffff;
-        CONST NAME      = "geolocator - ";
-        CONST FAIL      = "fail";
-        CONST COUNTNAME = "counter-";
+        private                     $ffff;
+        CONST NAME                  = "geolocator - ";
+        CONST FAIL                  = "fail";
+        CONST COUNTNAME             = "counter-";
         
         /**
          * @param RouterInterface $router
@@ -83,6 +83,8 @@
 //            $this->FILTER           = $this->neoxBag->getFilterLocal() + $this->neoxBag->getFilterConnection() + $this->neoxBag->getFilterContinents();
         
         }
+        
+        use Limitor;
         
         protected function setFilter(): void
         {
@@ -234,33 +236,33 @@
         /**
          * @throws InvalidArgumentException
          */
-        protected function getLimiter(string $name, int $expire = 60): bool {
-            
-            $key    = self::COUNTNAME . $name;
-            $Item2  = $this->cache->get( $key, function (ItemInterface $item) use($expire) {
-                $item->expiresAfter( (int) $expire); // 3600 = 1 hour
-                return 0;
-            });
-            
-            $Item2++;
-            
-            if( $Item2 < 43 ) {
-                
-                /** @var CacheItem $item */
-                $Item       = $this->cache->getItem( $key );
-                $expire     = $Item->getMetadata()['expiry'];
-                $this->cache->delete( "counter" );
-                $Item2      = $this->cache->get( $key, function (ItemInterface $item) use ($expire, $Item2) {
-                    $interval = new \DateTime("@$expire", new \DateTimeZone("Europe/Paris"));
-                    $item->expiresAt( $interval ); // 3600 = 1 hour
-                    return $Item2;
-                });
-                return true;
-            };
-            
-            return false;
-        }
-        
+//        protected function getLimiter(string $name, int $expire = 60): bool {
+//
+//            $key    = self::COUNTNAME . $name;
+//            $Item2  = $this->cache->get( $key, function (ItemInterface $item) use($expire) {
+//                $item->expiresAfter( (int) $expire); // 3600 = 1 hour
+//                return 0;
+//            });
+//
+//            $Item2++;
+//
+//            if( $Item2 < 43 ) {
+//
+//                /** @var CacheItem $item */
+//                $Item       = $this->cache->getItem( $key );
+//                $expire     = $Item->getMetadata()['expiry'];
+//                $this->cache->delete( "counter" );
+//                $Item2      = $this->cache->get( $key, function (ItemInterface $item) use ($expire, $Item2) {
+//                    $interval = new \DateTime("@$expire", new \DateTimeZone("Europe/Paris"));
+//                    $item->expiresAt( $interval ); // 3600 = 1 hour
+//                    return $Item2;
+//                });
+//                return true;
+//            };
+//
+//            return false;
+//        }
+//
         /**
          * @throws \ReflectionException
          */
