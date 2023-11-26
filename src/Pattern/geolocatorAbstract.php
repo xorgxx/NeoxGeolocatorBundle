@@ -151,7 +151,7 @@
             // cache to optimize ux : check very 1 hour security raison
             // First check have no id session yet so we nock one to pass, expire will be very short
             // lake this next clic anyware be check againe !!! this time id session will be create
-            $session = $this->requestStack->getCurrentRequest()->getSession();
+            $session = $this->requestStack->getMainRequest()->getSession();
             if (!$session->isStarted()) $session->start();
             
             $key    = $session->getId();
