@@ -156,7 +156,8 @@
             if ( !$key ) {
                 $key    = uniqid("pass_", true);
                 $timer  = 5;
-                return $this->router->generate($this->neoxBag->getCheckVpn());
+                // TODO !!!
+//                return $this->router->generate($this->neoxBag->getCheckVpn());
             }
        
             // Redis manage storage with expiration !!
