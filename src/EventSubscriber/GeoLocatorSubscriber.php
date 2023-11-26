@@ -57,8 +57,8 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         // This is the main query
         $controller         = $event->getRequest()->attributes->get('_controller');
         $redirectRequired   = $event->getRequest()->server->get('REDIRECT_URL') === "/unauthorized";
-        
-        if ( !$this->isProfilerController($controller) && !$redirectRequired ) {
+//        if ( !$this->isProfilerController($controller) && !$redirectRequired ) {
+        if ( !$this->isProfilerController($controller) ) {
             $nameRoute		= $event->getRequest()->get('_route');
             if (!$this->containsKeyword($nameRoute, ['profile', '_wd'])) {
                 $Geolocator    = $this->geolocatorFactory->getGeolocatorService()->checkAuthorize();
