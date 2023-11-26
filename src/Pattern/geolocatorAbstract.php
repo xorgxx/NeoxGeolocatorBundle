@@ -50,7 +50,9 @@
         protected GeolocationModel  $Geolocation;
         protected NeoxBag           $neoxBag;
         private $ffff;
-        CONST NAME = "geolocator - ";
+        CONST NAME      = "geolocator - ";
+        CONST FAIL      = "fail";
+        CONST COUNTNAME = "counter-";
         
         /**
          * @param RouterInterface $router
@@ -147,25 +149,20 @@
         public function checkAuthorize(): bool|string
         {
             // cache to optimize ux : check very 1 hour security raison
-            $key    = $this->requestStack->getSession()->getId();
-            
             // First check have no id session yet so we nock one to pass, expire will be very short
             // lake this next clic anyware be check againe !!! this time id session will be create
-            $timer  = $this->neoxBag->getTimer();
+            if (!$this->requestStack->getSession()->isStarted()) $this->requestStack->getSession()->start();
             
-            if ( !$key ) {
-                $this->requestStack->getSession()->start();
-                $key    = $this->requestStack->getSession()->getId();
-            }
-       
+            $key    = $this->requestStack->getSession()->getId();
+            
             // Redis manage storage with expiration !!
-            $value  = $this->cache->get( self::NAME . $key, function (ItemInterface $item) use ($timer) {
+            $value  = $this->cache->get( self::NAME . $key, function (ItemInterface $item)  {
                 $geolocation    = $this->Geolocator();
-                $timer          = $geolocation->getStatus() === "fail" ? 10 : $timer;
+                $timer          = $geolocation->getStatus() === self::FAIL ? 10 : $this->neoxBag->getTimer();
                 $item->expiresAfter( (int) $timer); // 3600 = 1 hour
                 return $geolocation;
             });
-            
+            /** @var geolocationModel $value*/
             if (!$value->isValid()) {
                 $route = $this->neoxBag->getNameRouteUnauthorized();
                 return $this->router->generate($route);
@@ -185,7 +182,7 @@
             } catch (\Exception $e) {
                 return null;
             }
-      
+            
         }
         
         /**yr
@@ -230,12 +227,12 @@
             return false; // Return false if none of the substrings are found
         }
         
+        /**
+         * @throws InvalidArgumentException
+         */
         protected function getLimiter(string $name, int $expire = 60): bool {
             
-            $key = "counter-$name";
-            /**
-             * @var ItemAdapter $Item
-             */
+            $key    = self::COUNTNAME . $name;
             $Item2  = $this->cache->get( $key, function (ItemInterface $item) use($expire) {
                 $item->expiresAfter( (int) $expire); // 3600 = 1 hour
                 return 0;
@@ -249,8 +246,7 @@
                 $Item       = $this->cache->getItem( $key );
                 $expire     = $Item->getMetadata()['expiry'];
                 $this->cache->delete( "counter" );
-                $interval   = new \DateInterval("PT{$expire}S");
-                $Item2      = $this->cache->get( "counter" , function (ItemInterface $item) use ($expire, $Item2) {
+                $Item2      = $this->cache->get( $key, function (ItemInterface $item) use ($expire, $Item2) {
                     $interval = new \DateTime("@$expire", new \DateTimeZone("Europe/Paris"));
                     $item->expiresAt( $interval ); // 3600 = 1 hour
                     return $Item2;
@@ -261,7 +257,10 @@
             return false;
         }
         
-        protected function buildClass( string $nameService){
+        /**
+         * @throws \ReflectionException
+         */
+        protected function buildClass(string $nameService){
             $className      = "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService;
             if (class_exists($className)) {
                 // Utilisez la réflexion pour instancier la classe du service

@@ -67,8 +67,6 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
                     $event->setController(function () use ($response) {
                         return $response;
                     });
-//                    $response = new RedirectResponse($Geolocator, 307);
-//                    $event->setResponse($response);
                 }
             }
         }
