@@ -2,6 +2,7 @@
     
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern;
     
+    use NeoxGeolocator\NeoxGeolocatorBundle\Model\neoxBag;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
     use Symfony\Component\HttpFoundation\RequestStack;
     use Symfony\Component\HttpKernel\KernelInterface;
@@ -67,30 +68,45 @@
             $this->neoxGeoBagService        = $neoxGeoBagService;
 //            $this->CDN              = $this->getParameter("neox_geolocator.cdn");
 //            $this->FILTER           = $this->getParameter("neox_geolocator.filter");
-            
+        
         }
         
         /**
-         * @return CacheInterface
+         * @throws \ReflectionException
          */
-        public function getGeolocatorService(): geolocatorAbstract
+        public function getGeolocatorService(): GeolocatorAbstract
         {
-            $neoxGeoBag     = $this->getNeoGeoService()->getneoxBag();
+            $neoxGeoBag         = $this->getNeoGeoService()->getNeoxBag();
+            $cdnToServiceMap    = $this->prepareCdnToServiceMap();
+            $classname          = $this->prepareClassName($cdnToServiceMap, $neoxGeoBag);
             
-            $cdnToServiceMap = [
+            return $this->createServiceClassInstance($classname, $neoxGeoBag);
+        }
+        
+        private function prepareCdnToServiceMap(): array
+        {
+            return [
                 "check.getipintel.net"  => "getipintelService",
                 "ip-api.com"            => "ipApiService",
                 "findip.net"            => "findIpService",
             ];
+        }
+        
+        private function prepareClassName(array $cdnToServiceMap, neoxBag $neoxGeoBag): string
+        {
+            $service    = $cdnToServiceMap[$neoxGeoBag->getCdn()["api_use"]] ?? "IpApiService";
+            $namespace  = "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\";
             
-//            $cdnValue       = $this->parameterBag->get('neox_geolocator.cdn')["api_use"];
-            $nameService    = $cdnToServiceMap[$neoxGeoBag->getCdn()["api_use"]] ?? "ipApiService";
-            $className      = $neoxGeoBag->getCustomeApi() ?: "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService;
-            
+            return $neoxGeoBag->getCustomeApi() ?: ($namespace . $service);
+        }
+        
+        /**
+         * @throws \ReflectionException
+         */
+        private function createServiceClassInstance($className, $neoxGeoBag)
+        {
             if (class_exists($className)) {
-                // Utilisez la réflexion pour instancier la classe du service
-                $reflectionClass = new \ReflectionClass($className);
-                $serviceInstance = $reflectionClass->newInstance(
+                return (new \ReflectionClass($className))->newInstance(
                     $this->router,
                     $this->parameterBag,
                     $this->httpClient,
@@ -99,11 +115,44 @@
                     $this->kernel,
                     $neoxGeoBag
                 );
-                return $serviceInstance;
             }
         }
         
-        private function getNeoGeoService(){
+        
+        /**
+         * @return CacheInterface
+         * @throws \ReflectionException
+         */
+//        public function getGeolocatorService(): geolocatorAbstract
+//        {
+//            $neoxGeoBag     = $this->getNeoGeoService()->getneoxBag();
+//
+//            $cdnToServiceMap = [
+//                "check.getipintel.net"  => "getipintelService",
+//                "ip-api.com"            => "ipApiService",
+//                "findip.net"            => "findIpService",
+//            ];
+//
+////            $cdnValue       = $this->parameterBag->get('neox_geolocator.cdn')["api_use"];
+//            $nameService    = $cdnToServiceMap[$neoxGeoBag->getCdn()["api_use"]] ?? "ipApiService";
+//            $className      = $neoxGeoBag->getCustomeApi() ?: ("NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService);
+//
+//            if (class_exists($className)) {
+//                // Utilisez la réflexion pour instancier la classe du service
+//                return (new \ReflectionClass($className))->newInstance(
+//                    $this->router,
+//                    $this->parameterBag,
+//                    $this->httpClient,
+//                    $this->requestStack,
+//                    $this->cache,
+//                    $this->kernel,
+//                    $neoxGeoBag
+//                );
+//            }
+//        }
+        
+        private function getNeoGeoService(): NeoxGeoBagService
+        {
             return new  neoxGeoBagService($this->requestStack, $this->parameterBag);
         }
     }

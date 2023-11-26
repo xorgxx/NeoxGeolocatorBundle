@@ -49,29 +49,7 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
 //            }
 //        }
 //    }
-    
-//    public function onKernelController(ControllerArgumentsEvent $event): void
-//    {
-//        // don't do anything if it's not the master request
-//        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType()) return;
-//
-//        // This is the main query
-//        $controller         = $event->getRequest()->attributes->get('_controller');
-//        $redirectRequired   = $event->getRequest()->server->get('REDIRECT_URL') === "/unauthorized";
-//        if ( !$this->isProfilerController($controller) && !$redirectRequired ) {
-//            $nameRoute		= $event->getRequest()->get('_route');
-//            if (!$this->containsKeyword($nameRoute, ['profile', '_wd'])) {
-//                $Geolocator    = $this->geolocatorFactory->getGeolocatorService()->checkAuthorize();
-//                if ( $Geolocator !== true && $nameRoute !== "Seo_unauthorized") {
-//                    $response = new RedirectResponse($Geolocator);
-//                    $event->setController(function () use ($response) {
-//                        return $response;
-//                    });
-//                }
-//            }
-//        }
-//    }
-//
+
     public function onKernelController(ControllerArgumentsEvent $event): void
     {
         // Early return if it's not the master request
@@ -118,15 +96,6 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
             return $carry || strpos($haystack, $keyword) !== false;
         }, false);
     }
-//    private function containsKeyword($haystack, array $keywords)
-//    {
-//        foreach ($keywords as $keyword) {
-//            if (strpos($haystack, $keyword) !== false) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
     
     public static function getSubscribedEvents(): array
     {
