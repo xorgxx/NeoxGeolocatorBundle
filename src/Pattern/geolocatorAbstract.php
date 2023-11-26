@@ -152,8 +152,7 @@
             // First check have no id session yet so we nock one to pass, expire will be very short
             // lake this next clic anyware be check againe !!! this time id session will be create
             $session = $this->requestStack->getSession();
-            if (!$session->isStarted()) $session->start();
-            
+//            if (!$session->isStarted()) $session->start();
             $key    = $session->getId();
             
             // Redis manage storage with expiration !!
