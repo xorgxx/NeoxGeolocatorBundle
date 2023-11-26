@@ -7,6 +7,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -18,7 +19,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class GeoLocatorSubscriber implements EventSubscriberInterface
 {
-    public function __construct( GeolocatorFactory $geolocatorFactory)
+    public function __construct( GeolocatorFactory $geolocatorFactory )
     {
         $this->geolocatorFactory    = $geolocatorFactory;
     }
@@ -57,8 +58,8 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         // This is the main query
         $controller         = $event->getRequest()->attributes->get('_controller');
         $redirectRequired   = $event->getRequest()->server->get('REDIRECT_URL') === "/unauthorized";
-//        if ( !$this->isProfilerController($controller) && !$redirectRequired ) {
-        if ( !$this->isProfilerController($controller) ) {
+        if ( !$this->isProfilerController($controller) && !$redirectRequired ) {
+//        if ( !$this->isProfilerController($controller) ) {
             $nameRoute		= $event->getRequest()->get('_route');
             if (!$this->containsKeyword($nameRoute, ['profile', '_wd'])) {
                 $Geolocator    = $this->geolocatorFactory->getGeolocatorService()->checkAuthorize();
