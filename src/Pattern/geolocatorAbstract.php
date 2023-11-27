@@ -192,35 +192,45 @@
         }
         
         /**yr
+         *
          * @throws ServerExceptionInterface
          * @throws RedirectionExceptionInterface
-         * @throws ClientExceptionInterface
+         * @throws ClientExceptionInterface*@throws \JsonException
+         * @throws TransportExceptionInterface
+         * @throws \JsonException
          */
         protected function getRealIp( ): ?string
         {
-            // in dev mode mock
-            if ( $this->kernel->getEnvironment() === 'dev') {
-                // for test  Bulgary "156.146.55.226"
-                return $this->neoxBag->getIpLocalDev() ;
-            }
             
-            $request    = $this->requestStack->getCurrentRequest();
-            $ip         = $request->getClientIp();
-            
-            if ($request->headers->has('X-Real-IP')) {
-                return $request->headers->get('X-Real-IP');
-            }
-            
-            if ($request->headers->has('CF-Connecting-IP')) {
-                $ip = $request->headers->get('CF-Connecting-IP');
-            }
-            
-            if ($request->headers->has('X-Forwarded-For')) {
-                $ips = explode(',', $request->headers->get('X-Forwarded-For'), 2);
-                $ip = trim($ips[0]); // The left-most IP address is the original client
-            }
-            
-            return $ip;
+            // https://api.ipify.org?format=json
+            $api            = "https://api.ipify.org?format=json";
+            // todo: problem in same cas to get real ip !!!
+            $data   = $this->senApi( $api );
+            $ip     = json_decode($data, false, 512, JSON_THROW_ON_ERROR);
+            return $ip->ip;
+//            // in dev mode mock
+//            if ( $this->kernel->getEnvironment() === 'dev') {
+//                // for test  Bulgary "156.146.55.226"
+//                return $this->neoxBag->getIpLocalDev() ;
+//            }
+//
+//            $request    = $this->requestStack->getCurrentRequest();
+//            $ip         = $request->getClientIp();
+//
+//            if ($request->headers->has('X-Real-IP')) {
+//                return $request->headers->get('X-Real-IP');
+//            }
+//
+//            if ($request->headers->has('CF-Connecting-IP')) {
+//                $ip = $request->headers->get('CF-Connecting-IP');
+//            }
+//
+//            if ($request->headers->has('X-Forwarded-For')) {
+//                $ips = explode(',', $request->headers->get('X-Forwarded-For'), 2);
+//                $ip = trim($ips[0]); // The left-most IP address is the original client
+//            }
+//
+//            return $ip;
         }
         
         private function stringContainsSubstringFromArray(string $mainString, array $substringsArray): bool

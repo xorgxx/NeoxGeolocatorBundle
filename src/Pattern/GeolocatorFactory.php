@@ -121,7 +121,6 @@
         
         /**
          * @return CacheInterface
-         * @throws \ReflectionException
          */
 //        public function getGeolocatorService(): geolocatorAbstract
 //        {
