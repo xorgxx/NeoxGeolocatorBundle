@@ -1,6 +1,6 @@
 # NeoxGeolocatorBundle { Symfony 6 }
 This bundle provides additional tools geolocator in your application.
-Its main goal is to make it simple for you to manage integration additional tools!
+Its main goal is to make it simple for you to manage integration additional tools & acte as firwall!
 
 Let say you want not people from "South America" access to your application or people 
 access with Vpn, Proxy, Tor or you want only people from "Paris". Geolocation IT'S for you !!
@@ -65,7 +65,7 @@ It set automatique but you can custom (by default)
               - "vpn"
               - "proxy"
               
-      # Crawler how can in website will empty to refuse all !! | rule order read = 4
+      # Crawler how can in website !! | rule order read = 4
       crawler:
           - "Googlebot"
           - "Bingbot"
