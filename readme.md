@@ -2,6 +2,8 @@
 This bundle provides additional tools geolocator in your application.
 Its main goal is to make it simple for you to manage integration additional tools & acte as firwall!
 
+[![2023-11-28-22-27-57.png](https://i.postimg.cc/c473bp6F/2023-11-28-22-27-57.png)](https://postimg.cc/4mdnKF6c)
+
 Let say you want not people from "South America" access to your application or people 
 access with Vpn, Proxy, Tor or you want only people from "Paris". Geolocation IT'S for you !!
 Even you cant filter mobile !! so if all filter will render "Seo_unauthorized" !! and not will access to your web site
