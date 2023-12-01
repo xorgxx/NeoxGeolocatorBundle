@@ -40,8 +40,7 @@
             $currentIp      = $this->getRealIp();
             $api            = "http://api." . $this->neoxBag->getCdn()["api_use"] . "/$currentIp/?token=" . $this->neoxBag->getCdn()['api_key'];
             // todo: check if this expires !!!
-            $data  = $this->senApi( $api );
-            
+            $data           = json_decode($this->senApi( $api ), true);
             $geolocationModel   = new GeolocationModel();
             $geolocationModel->setstatus('success')               // = ;
                 ->setcontinent($data["continent"]["names"]["fr"] ?? 'Europe' )          // = 'Europe';
