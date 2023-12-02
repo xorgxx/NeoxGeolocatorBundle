@@ -183,13 +183,22 @@
         protected function senApi(string $api ): ?string
         {
             try {
-                $response_  = $this->httpClient->request('GET', $api, ['timeout' => 20]);
-                return $response_->getContent();
+                $response = $this->httpClient->request('GET', $api, ['timeout' => 20]);
+                
+                if ($response->getStatusCode() !== 200) {
+                    // you might also want to log this situation.
+                    return null;
+                }
+                
+                return $response->getContent();
             } catch (\Exception $e) {
+                // Log the exception message
+                //e.g something like $this->logger->error('API request failed: ' . $e->getMessage());
                 return null;
             }
             
         }
+        
         
         /**yr
          *
