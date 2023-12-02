@@ -88,8 +88,8 @@
         
         protected function setFilter(): void
         {
-            $filter             = array_merge($this->neoxBag->getFilterLocal(), $this->neoxBag->getFilterContinents());
-            $item               = $this->Geolocation->toArray();
+            $filter             = $this->strFy(array_merge($this->neoxBag->getFilterLocal(), $this->neoxBag->getFilterContinents()));
+            $item               = $this->strFy($this->Geolocation->toArray());
             
             $filteredData       = array_filter($item, function ( $itemz ) use ($filter) {
                 return in_array($itemz, $filter );
@@ -185,7 +185,7 @@
             try {
                 $response = $this->httpClient->request('GET', $api, ['timeout' => 20]);
                 
-                if ($response->getStatusCode() !== 200) {
+                if ($response->getStatusCode() != 200) {
                     // you might also want to log this situation.
                     return null;
                 }
@@ -198,7 +198,6 @@
             }
             
         }
-        
         
         /**yr
          *
@@ -229,21 +228,24 @@
             if ($request->headers->has('x-real-ip')) {
                 return $request->headers->get('x-real-ip');
             }
-//
-//            if ($request->headers->has('CF-Connecting-IP')) {
-//                $ip = $request->headers->get('CF-Connecting-IP');
-//            }
-//
-//            if ($request->headers->has('X-Forwarded-For')) {
-//                $ips = explode(',', $request->headers->get('X-Forwarded-For'), 2);
-//                $ip = trim($ips[0]); // The left-most IP address is the original client
-//            }
+
+            if ($request->headers->has('CF-Connecting-IP')) {
+                $ip = $request->headers->get('CF-Connecting-IP');
+            }
+
+            if ($request->headers->has('X-Forwarded-For')) {
+                $ips = explode(',', $request->headers->get('X-Forwarded-For'), 2);
+                $ip = trim($ips[0]); // The left-most IP address is the original client
+            }
 
             return $ip;
         }
         
         private function stringContainsSubstringFromArray(string $mainString, array $substringsArray): bool
         {
+            $substringsArray    = $this->strFy($substringsArray);
+            $mainString         = strtolower($mainString);
+            
             return array_reduce($substringsArray, static function(bool $carry, string $substring) use ($mainString): bool {
                 return $carry || str_contains($mainString, $substring);
             }, false);
@@ -272,5 +274,20 @@
         protected function getParameter($key): UnitEnum|float|array|bool|int|string|null
         {
             return $this->parameterBag->get($key);
+        }
+        
+        /**
+         * @param $array
+         *
+         * @return array|string[]
+         */
+        private function strFy($array): array
+        {
+            return array_map(function ($value) {
+                if (is_string($value)) {
+                    return strtolower($value);
+                }
+                return $value;
+            }, $array);
         }
     }
