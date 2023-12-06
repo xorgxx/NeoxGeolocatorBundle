@@ -239,7 +239,7 @@
          */
         public static function fromJson($json): GeolocationModel
         {
-            $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR) ? : null;
+            $data = json_decode($json, true, 512, JSON_ERROR_NONE) ? : null;
 //            if ($data === 'fail' || $data === '') {
 //                $data['status']        = 'mock';
 //                $data['continent']     = 'Europe';

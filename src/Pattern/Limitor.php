@@ -21,19 +21,21 @@
         
         protected function getIpPing(string $limiterName, int $expire = 10): bool
         {
-            $limiterKey     = self::COUNTNAME . $limiterName;
-            $limiterValue   = $this->incrementLimiterValue($limiterKey, $expire);
-            
-            if ( $limiterValue > 5 ) {
-                $this->deleteCounterCache($limiterKey);
-                $expire = 600;
-                $this->cache->get($limiterKey, function (ItemInterface $item) use($expire) {
+            if ( $this->neoxBag->getCheckPing() ) {
+                $limiterKey     = self::COUNTNAME . $limiterName;
+                $limiterValue   = $this->incrementLimiterValue($limiterKey, $expire);
+                
+                if ( $limiterValue > 5 ) {
+                    $this->deleteCounterCache($limiterKey);
+                    $expire = 600;
+                    $this->cache->get($limiterKey, function (ItemInterface $item) use($expire) {
                         $item->expiresAfter($expire);
                         return 20;
                     });
-                return false;
+                    return false;
+                }
+                $limiterValue = $this->updateLimiterValue($limiterKey, $limiterValue);
             }
-            $limiterValue = $this->updateLimiterValue($limiterKey, $limiterValue);
             return true;
         }
         

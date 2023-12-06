@@ -44,8 +44,7 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         $nameRoute		= $event->getRequest()->get('_route');
         if (!$this->containsKeyword($nameRoute, ['profile', '_wd'])) {
             if (!$this->geolocatorFactory->getGeolocatorService()->checkIpPing()) {
-                $response =  throw new BadRequestHttpException('Invalid request. Condition : BANNI.');
-                $event->setResponse($response);
+                throw new BadRequestHttpException('Invalid request. Condition : BANNIS.');
             }
         }
     }

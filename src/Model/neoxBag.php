@@ -13,7 +13,8 @@
         public ?array       $crawler                    = [];
         public ?string      $name_route_unauthorized    = null;
         public ?int         $timer                      = null;
-        public ?string      $check_vpn                   = null;
+        public ?string      $check_vpn                  = null;
+        public ?string      $check_ping                 = null;
         
         public function getIpLocalDev(): ?string
         {
@@ -124,6 +125,19 @@
             $this->check_vpn = $check_vpn;
             return $this;
         }
+        
+        public function getCheckPing(): ?string
+        {
+            return $this->check_ping;
+        }
+        
+        public function setCheckPing(?string $check_ping): neoxBag
+        {
+            $this->check_ping = $check_ping;
+            return $this;
+        }
+        
+        
         
         
     }
