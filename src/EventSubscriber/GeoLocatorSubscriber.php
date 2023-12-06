@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -33,22 +34,21 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
      * @throws \JsonException
      * @throws InvalidArgumentException
      */
-//    public function onKernelRequest(RequestEvent $event): void
-//    {
-//        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType()) {
-//            // don't do anything if it's not the master request
-//            return;
-//        }
-//
-//        $nameRoute		= $event->getRequest()->get('_route');
-//        if (!$this->containsKeyword($nameRoute, ['profile', '_wd'])) {
-//            $Geolocator    = $this->geolocatorFactory->getGeolocatorService()->checkAuthorize();
-//            if ( $Geolocator !== true && $nameRoute !== "Seo_unauthorized") {
-//                $response = new RedirectResponse($Geolocator, 307);
-//                $event->setResponse($response);
-//            }
-//        }
-//    }
+    public function onKernelRequest(RequestEvent $event): void
+    {
+        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType()) {
+            // don't do anything if it's not the master request
+            return;
+        }
+
+        $nameRoute		= $event->getRequest()->get('_route');
+        if (!$this->containsKeyword($nameRoute, ['profile', '_wd'])) {
+            if (!$this->geolocatorFactory->getGeolocatorService()->checkIpPing()) {
+                $response =  throw new BadRequestHttpException('Invalid request. Condition : BANNI.');
+                $event->setResponse($response);
+            }
+        }
+    }
 
     public function onKernelController(ControllerArgumentsEvent $event): void
     {
@@ -100,7 +100,7 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-//            KernelEvents::REQUEST               => ['onKernelRequest', 1],
+            KernelEvents::REQUEST               => ['onKernelRequest', 1],
             KernelEvents::CONTROLLER_ARGUMENTS  => 'onKernelController',
         ];
     }

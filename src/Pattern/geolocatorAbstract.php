@@ -241,6 +241,13 @@
             return $ip;
         }
         
+        public function checkIpPing(): bool
+        {
+            $ipClient = $this->getRealIp();
+            return $this->getIpPing($ipClient);
+            
+        }
+        
         private function stringContainsSubstringFromArray(string $mainString, array $substringsArray): bool
         {
             $substringsArray    = $this->strFy($substringsArray);

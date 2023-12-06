@@ -39,7 +39,7 @@
             // check ip
             // $currentIp = $ipCheck ?: $this->httpClient->request('GET', $this->CDN["ip"] )->getContent();
             // $currentIp      = $this->requestStack->getCurrentRequest()->getClientIp();
-            $data   = "";
+            $data           = "";
             if ( $this->getLimiter('ipapi') ) {
                 $currentIp      = $this->getRealIp();
                 $api            = "http://" . $this->neoxBag->getCdn()["api_use"] . "/json/$currentIp?fields=status,message,continent,continentCode,country,countryCode,regionName,city,zip,lat,lon,reverse,mobile,proxy,hosting,query";

@@ -19,6 +19,24 @@
             return false;
         }
         
+        protected function getIpPing(string $limiterName, int $expire = 10): bool
+        {
+            $limiterKey     = self::COUNTNAME . $limiterName;
+            $limiterValue   = $this->incrementLimiterValue($limiterKey, $expire);
+            
+            if ( $limiterValue > 5 ) {
+                $this->deleteCounterCache($limiterKey);
+                $expire = 600;
+                $this->cache->get($limiterKey, function (ItemInterface $item) use($expire) {
+                        $item->expiresAfter($expire);
+                        return 20;
+                    });
+                return false;
+            }
+            $limiterValue = $this->updateLimiterValue($limiterKey, $limiterValue);
+            return true;
+        }
+        
         protected function incrementLimiterValue($limiterKey, $expire)
         {
             return $this->cache->get($limiterKey, function (ItemInterface $item) use($expire) {
@@ -30,7 +48,7 @@
         private function updateLimiterValue($limiterKey, $limiterValue)
         {
             $expire = $this->getLimiterExpiry($limiterKey);
-            $this->deleteCounterCache();
+            $this->deleteCounterCache($limiterKey);
             return $this->resetLimiterValue($limiterKey, $limiterValue, $expire);
         }
         
@@ -40,9 +58,9 @@
             return $item->getMetadata()['expiry'];
         }
         
-        private function deleteCounterCache()
+        private function deleteCounterCache($limiterKey)
         {
-            $this->cache->delete("counter");
+            $this->cache->delete($limiterKey);
         }
         
         private function resetLimiterValue($limiterKey, $limiterValue, $expire)
