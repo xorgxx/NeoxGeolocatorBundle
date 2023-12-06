@@ -47,6 +47,7 @@ It set automatique but you can custom (by default)
 ```
    neox_geolocator:
       ip_local_dev: "156.146.55.226" # for test  Bulgary "156.146.55.226"
+      check_ping: true # false | true it will protect agains "death ping" !!!
       cdn:
           api_use: "findip.net" # ip-api.com freemium,  check.getipintel.net FREE, https://findip.net/ free
           api_key: "xxxxxxxxxxxxxxxxxx"
