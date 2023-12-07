@@ -47,7 +47,11 @@ It set automatique but you can custom (by default)
 ```
    neox_geolocator:
       ip_local_dev: "156.146.55.226" # for test  Bulgary "156.146.55.226"
-      check_ping: true # false | true it will protect agains "death ping" !!!
+      check_ping:  # false | true it will protect agains "death ping" !!!
+          on: false       # on off
+          expire: 10      # check expiration to reste timer
+          ping:   5       # after x ping on "expire" value it will banni for xxx
+          banni: 700      # in seconde banni time
       cdn:
           api_use: "findip.net" # ip-api.com freemium,  check.getipintel.net FREE, https://findip.net/ free
           api_key: "xxxxxxxxxxxxxxxxxx"

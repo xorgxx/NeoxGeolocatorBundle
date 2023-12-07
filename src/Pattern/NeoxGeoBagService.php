@@ -63,7 +63,7 @@
                 ->setNameRouteUnauthorized($this->neoxBagParams ['name_route_unauthorized'] ?? null)
                 ->setTimer($this->neoxBagParams ['timer'] ?? null)
                 ->setCheckVpn($this->neoxBagParams ['check_vpn'] ?? null)
-                ->setCheckPing($this->neoxBagParams ['check_ping'] ?? null)
+                ->setCheckPing($this->neoxBagParams ['check_ping'] ?? [])
             ;
         }
         

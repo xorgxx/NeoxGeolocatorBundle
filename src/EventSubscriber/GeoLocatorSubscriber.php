@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -40,13 +42,14 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
             // don't do anything if it's not the master request
             return;
         }
-
+        
         $nameRoute		= $event->getRequest()->get('_route');
         if (!$this->containsKeyword($nameRoute, ['profile', '_wd'])) {
             if (!$this->geolocatorFactory->getGeolocatorService()->checkIpPing()) {
-                throw new BadRequestHttpException('Invalid request. Condition : BANNIS.');
+                throw new TooManyRequestsHttpException(3600,'Too Many request. |-> BANNIS.');
             }
         }
+
     }
 
     public function onKernelController(ControllerArgumentsEvent $event): void

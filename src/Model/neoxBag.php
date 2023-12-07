@@ -14,7 +14,7 @@
         public ?string      $name_route_unauthorized    = null;
         public ?int         $timer                      = null;
         public ?string      $check_vpn                  = null;
-        public ?string      $check_ping                 = null;
+        public ?array       $check_ping                 = [];
         
         public function getIpLocalDev(): ?string
         {
@@ -126,19 +126,16 @@
             return $this;
         }
         
-        public function getCheckPing(): ?string
+        public function getCheckPing(): ?array
         {
             return $this->check_ping;
         }
         
-        public function setCheckPing(?string $check_ping): neoxBag
+        public function setCheckPing(?array $check_ping): neoxBag
         {
             $this->check_ping = $check_ping;
             return $this;
         }
-        
-        
-        
         
     }
     

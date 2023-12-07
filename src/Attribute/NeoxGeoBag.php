@@ -45,6 +45,6 @@
             public ?string      $name_route_unauthorized    = null,
             public ?int         $timer                      = null,
             public ?string      $check_vpn                  = null,
-            public ?string      $check_ping                 = null,
+            public ?array      $check_ping                  = [],
         ) {}
     }
