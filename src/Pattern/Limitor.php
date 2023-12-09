@@ -2,6 +2,7 @@
     
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern;
     
+    use Psr\Cache\InvalidArgumentException;
     use Symfony\Contracts\Cache\ItemInterface;
     
     trait Limitor
@@ -44,6 +45,9 @@
             return true;
         }
         
+        /**
+         * @throws InvalidArgumentException
+         */
         protected function incrementLimiterValue($limiterKey, $expire)
         {
             return $this->cache->get($limiterKey, function (ItemInterface $item) use($expire) {
@@ -52,6 +56,9 @@
                 }) + 1;
         }
         
+        /**
+         * @throws \Exception
+         */
         private function updateLimiterValue($limiterKey, $limiterValue)
         {
             $expire = $this->getLimiterExpiry($limiterKey);
@@ -59,13 +66,24 @@
             return $this->resetLimiterValue($limiterKey, $limiterValue, $expire);
         }
         
+        /**
+         * @throws \Exception
+         */
         private function getLimiterExpiry($limiterKey)
         {
             $item = $this->cache->getItem($limiterKey);
-            return $item->getMetadata()['expiry'];
+            return $item->getMetadata()['expiry'] ?? $this->getDefaultExpiry();
         }
         
-        private function deleteCounterCache($limiterKey)
+        /**
+         * @throws \Exception
+         */
+        private function getDefaultExpiry(): \DateTime
+        {
+            return (new \DateTime("now", new \DateTimeZone('Europe/Paris')))->modify('+2 minutes');
+        }
+        
+        private function deleteCounterCache($limiterKey): void
         {
             $this->cache->delete($limiterKey);
         }
