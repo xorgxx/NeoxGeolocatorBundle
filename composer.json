@@ -16,24 +16,16 @@
     "nikic/php-parser": "^4.11",
     "symfony/http-client": "^6.3||^6.4||^7.0",
     "symfony/config": "^6.3||^6.4||^7.0",
-    "symfony/console": "^6.3||^6.4||^7.0",
     "symfony/dependency-injection": "^6.3||^6.4||^7.0",
     "symfony/deprecation-contracts": "^2.2|^3",
-    "symfony/filesystem": "^6.3||^6.4||^7.0",
-    "symfony/finder": "^6.3||^6.4||^7.0",
     "symfony/framework-bundle": "^6.3||^6.4||^7.0",
     "symfony/http-kernel": "^6.3||^6.4||^7.0",
     "symfony/process": "^6.3||^6.4||^7.0"
   },
   "require-dev": {
-    "composer/semver": "^3.0",
-    "doctrine/doctrine-bundle": "^2.5.0",
-    "doctrine/orm": "^2.10.0",
-    "symfony/maker-bundle": "^1.51",
     "symfony/phpunit-bridge": "^6.3||^6.4||^7.0",
     "symfony/security-core": "^6.3||^6.4||^7.0",
-    "symfony/yaml": "^6.3||^6.4||^7.0",
-    "twig/twig": "^2.0|^3.0"
+    "symfony/yaml": "^6.3||^6.4||^7.0"
   },
   "config": {
     "preferred-install": "dist",
@@ -41,11 +33,6 @@
     "allow-plugins": {
       "symfony/flex": false
     }
-  },
-  "conflict": {
-    "doctrine/orm": "<2.10",
-    "doctrine/doctrine-bundle": "<2.4",
-    "symfony/doctrine-bridge": "<5.4"
   },
   "autoload": {
     "psr-4": {
