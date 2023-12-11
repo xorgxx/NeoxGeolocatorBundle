@@ -91,9 +91,12 @@
             $filter             = $this->strFy(array_merge($this->neoxBag->getFilterLocal(), $this->neoxBag->getFilterContinents()));
             $item               = $this->strFy($this->Geolocation->toArray());
             
-            $filteredData       = array_filter($item, function ( $itemz ) use ($filter) {
-                return in_array($itemz, $filter );
-            });
+            $filteredData       = array_intersect($item, $filter);
+
+//            $filteredData       = array_filter($item, function ( $iteme ) use ($filter) {
+//                return in_array($iteme, $filter );
+//            });
+            
             $filteredCount      = count($filteredData);
             
             if ($filteredCount === 1) {
