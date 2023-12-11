@@ -99,7 +99,7 @@
             
             $filteredCount      = count($filteredData);
             
-            if ($filteredCount === 1) {
+            if ( empty($filteredCount) ) {
                 $this->Geolocation->setValid(false);
             }
             
