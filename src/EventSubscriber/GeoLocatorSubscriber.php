@@ -95,8 +95,14 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
     private function containsKeyword($haystack, array $keywords): bool
     {
         return array_reduce($keywords, static function (bool $carry, string $keyword) use ($haystack): bool {
-            return $carry || strpos($haystack, $keyword) !== false;
-        }, false);
+                return $carry || strpos($haystack, $keyword) !== false; // Check if keyword in string
+            }, false) && array_reduce($keywords, static function (bool $carry, string $keyword) use ($haystack): bool {
+                return $carry || strpos($haystack, $keyword) === 0; // Check if keyword at start of string
+            }, false);
+        
+//        return array_reduce($keywords, static function (bool $carry, string $keyword) use ($haystack): bool {
+//            return $carry || stripos($haystack, $keyword) !== false;
+//        }, false);
     }
     
     public static function getSubscribedEvents(): array

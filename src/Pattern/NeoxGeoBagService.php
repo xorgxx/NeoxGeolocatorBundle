@@ -40,7 +40,7 @@
                 $data = $attribute->newInstance();
                 foreach ($data as $key => $value) {
                     if ($value) {
-                        $setter = "set" . $key;
+                        $setter = "set" . $this->toCamelCase($key);
                         $this->neoxBag->$setter($value);
                     }
                 }
@@ -84,5 +84,9 @@
                 $controllerName = $request->attributes->get('_controller');
                 list($this->controller, $this->action) = explode('::', $controllerName);
             }
+        }
+        
+        private function toCamelCase($str) {
+            return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $str))));
         }
     }
