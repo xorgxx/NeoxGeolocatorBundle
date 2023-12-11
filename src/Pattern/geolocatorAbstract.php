@@ -154,13 +154,16 @@
             // First check have no id session yet so we nock one to pass, expire will be very short
             // lake this next clic anyware be check againe !!! this time id session will be create
             $this->requestStack->getSession()->set("geo","id");
-            $session    = $this->requestStack->getSession()->getId();
-
-            $timer      = $this->neoxBag->getTimer();
-            if ( !$session ) {
-                $session    = uniqid("pass_", true);
-                $timer      = 30;
+            
+            list($timer, $session) = $this->setTimer();
+            
+            // TODO force geolocation !!!
+            // 1 - delete old one
+            // 2 - create new one with new timestamp and geolocator
+            if ( $this->neoxBag->getForcer() ) {
+                $this->deleteCounterCache(self::NAME . $session);
             }
+            
             // Redis manage storage with expiration !!
             $value  = $this->cache->get( self::NAME . $session, function (ItemInterface $item) use ($timer)  {
                 $geolocation    = $this->Geolocator();
@@ -168,6 +171,7 @@
                 $item->expiresAfter( (int) $timer); // 3600 = 1 hour
                 return $geolocation;
             });
+            
             /** @var geolocationModel $value*/
             if (!$value->isValid()) {
                 $route = $this->neoxBag->getNameRouteUnauthorized();
@@ -296,5 +300,22 @@
                 }
                 return $value;
             }, $array);
+        }
+        
+        /**
+         * @param string $session
+         *
+         * @return array
+         */
+        private function setTimer(): array
+        {
+            $session    = $this->requestStack->getSession()->getId();
+            
+            $timer = $this->neoxBag->getTimer();
+            if (!$session) {
+                $session = uniqid("pass_", true);
+                $timer = 30;
+            }
+            return array($timer, $session);
         }
     }

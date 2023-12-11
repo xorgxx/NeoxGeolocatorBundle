@@ -47,6 +47,7 @@ It set automatique but you can custom (by default)
 ```
    neox_geolocator:
       ip_local_dev: "156.146.55.226" # for test  Bulgary "156.146.55.226"
+      forcer: false # this is to force to get new geolocator same timer it's userfull.
       check_ping:  # false | true it will protect agains "death ping" !!!
           on: false       # on off
           expire: 10      # check expiration to reste timer
@@ -106,7 +107,7 @@ just need to create route & template to `name_route_unauthorized: "Seo_unauthori
      * @return Response
      */
      
-    #[NeoxGeoBag( filterLocal: ["RU", "GB"], filterContinents: ["Asia"])]   
+    #[NeoxGeoBag( forcer: true, filterLocal: ["RU", "GB"], filterContinents: ["Asia"])]   
     public function unauthorized(Request $request, CacheItemPoolInterface  $adapter): Response
     {
         $session    = $request->getSession();

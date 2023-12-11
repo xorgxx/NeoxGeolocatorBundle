@@ -64,6 +64,7 @@
                 ->setTimer($this->neoxBagParams ['timer'] ?? null)
                 ->setCheckVpn($this->neoxBagParams ['check_vpn'] ?? null)
                 ->setCheckPing($this->neoxBagParams ['check_ping'] ?? [])
+                ->setForcer($this->neoxBagParams ['forcer'] ?? false)
             ;
         }
         

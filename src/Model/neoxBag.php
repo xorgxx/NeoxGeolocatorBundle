@@ -15,6 +15,7 @@
         public ?int         $timer                      = null;
         public ?string      $check_vpn                  = null;
         public ?array       $check_ping                 = [];
+        public ?bool        $forcer                     = false;
         
         public function getIpLocalDev(): ?string
         {
@@ -134,6 +135,17 @@
         public function setCheckPing(?array $check_ping): neoxBag
         {
             $this->check_ping = $check_ping;
+            return $this;
+        }
+        
+        public function getForcer(): ?bool
+        {
+            return $this->forcer;
+        }
+        
+        public function setForcer(?bool $forcer): neoxBag
+        {
+            $this->forcer = $forcer;
             return $this;
         }
         

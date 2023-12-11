@@ -32,6 +32,7 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('ip_local_dev')->defaultValue(null)->end()
             ->scalarNode('custome_api')->defaultValue(null)->end()
             ->scalarNode('check_vpn')->defaultValue(null)->end()
+            ->scalarNode('forcer')->defaultFalse(null)->end()
             ->arrayNode('check_ping')
                 ->children()
                     ->scalarNode('on')->defaultFalse()->end()
