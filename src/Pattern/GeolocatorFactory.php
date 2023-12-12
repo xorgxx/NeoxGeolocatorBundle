@@ -118,38 +118,6 @@
             }
         }
         
-        
-        /**
-         * @return CacheInterface
-         */
-//        public function getGeolocatorService(): geolocatorAbstract
-//        {
-//            $neoxGeoBag     = $this->getNeoGeoService()->getneoxBag();
-//
-//            $cdnToServiceMap = [
-//                "check.getipintel.net"  => "getipintelService",
-//                "ip-api.com"            => "ipApiService",
-//                "findip.net"            => "findIpService",
-//            ];
-//
-////            $cdnValue       = $this->parameterBag->get('neox_geolocator.cdn')["api_use"];
-//            $nameService    = $cdnToServiceMap[$neoxGeoBag->getCdn()["api_use"]] ?? "ipApiService";
-//            $className      = $neoxGeoBag->getCustomeApi() ?: ("NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService);
-//
-//            if (class_exists($className)) {
-//                // Utilisez la réflexion pour instancier la classe du service
-//                return (new \ReflectionClass($className))->newInstance(
-//                    $this->router,
-//                    $this->parameterBag,
-//                    $this->httpClient,
-//                    $this->requestStack,
-//                    $this->cache,
-//                    $this->kernel,
-//                    $neoxGeoBag
-//                );
-//            }
-//        }
-        
         private function getNeoGeoService(): NeoxGeoBagService
         {
             return new  neoxGeoBagService($this->requestStack, $this->parameterBag);

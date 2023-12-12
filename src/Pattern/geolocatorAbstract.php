@@ -84,66 +84,8 @@
         
         }
         
+ 
         use Limitor;
-        
-        protected function setFilter(): void
-        {
-            $filter             = $this->strFy(array_merge($this->neoxBag->getFilterLocal(), $this->neoxBag->getFilterContinents()));
-            $item               = $this->strFy($this->Geolocation->toArray());
-            
-            $filteredData       = array_intersect($item, $filter);
-
-//            $filteredData       = array_filter($item, function ( $iteme ) use ($filter) {
-//                return in_array($iteme, $filter );
-//            });
-            
-            $filteredCount      = count($filteredData);
-            
-            if ( empty($filteredCount) ) {
-                $this->Geolocation->setValid(false);
-            }
-            
-            $this->setFilterConnection();
-            $this->setFilterCrawler();
-            
-        }
-        
-        protected function setFilterLocal(): void
-        {
-            $local    = $this->neoxBag->getFilterLocal();
-            if (!empty($local) && $this->Geolocation->getStatus() !== "fail" && !in_array($this->Geolocation->getCountryCode(), $local, true)) {
-                // Send the modified response object to the event this country is not allowed
-                $this->Geolocation->setValid(false);
-            }
-        }
-        
-        protected function setFilterConnection(): void
-        {
-            $connection    = $this->neoxBag->getFilterConnection();
-            if (!empty($connection) && $this->Geolocation->getStatus() !== "fail" && $this->Geolocation->isProxy() ) {
-                // Send the modified response object to the event this country is not allowed
-                $this->Geolocation->setValid(false);
-            }
-        }
-        
-        protected function setFilterContinents(): void
-        {
-            $continents    = $this->neoxBag->getFilterContinents();
-            if (!empty($continents) && $this->Geolocation->getStatus() !== "fail" && !in_array($this->Geolocation->getContinent(), $continents, true)) {
-                // Send the modified response object to the event this country is not allowed
-                $this->Geolocation->setValid(false);
-            }
-        }
-        
-        protected function setFilterCrawler(): void
-        {
-            $crawler    = $this->neoxBag->getCrawler();
-            if (!empty($crawler) && $this->Geolocation->getStatus() !== "fail" && $this->stringContainsSubstringFromArray($this->Geolocation->getReverse(), $crawler) ) {
-                // Send the modified response object to the event this country is not allowed
-                $this->Geolocation->setValid(true);
-            }
-        }
-        
         /**
          * @throws RedirectionExceptionInterface
          * @throws ClientExceptionInterface
@@ -182,6 +124,82 @@
             }
             
             return true;
+        }
+        
+        public function checkIpPing(): bool
+        {
+            $ipClient = $this->getRealIp();
+            return $this->getIpPing($ipClient);
+            
+        }
+        
+        /**
+         * @throws \Exception
+         */
+        public function buildClass(string $nameService) : object
+        {
+            $className = "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService;
+            if (! class_exists($className)) {
+                throw new \Exception("Service class '{$className}' does not exist.");
+            }
+            
+            return new $className(
+                $this->router,
+                $this->parameterBag,
+                $this->httpClient,
+                $this->requestStack,
+                $this->cache,
+                $this->kernel
+            );
+        }
+        
+        /**
+         * Set all filter ......
+         */
+        
+        protected function setFilter(): void
+        {
+            $filter             = $this->strFy(array_merge($this->neoxBag->getFilterLocal(), $this->neoxBag->getFilterContinents()));
+            $item               = $this->strFy($this->Geolocation->toArray());
+            $filteredData       = $this->getFilteredData($item, $filter);
+            
+            $this->setFilterConnection();
+            $this->setFilterCrawler();
+            
+        }
+        
+        protected function setFilterLocal(): void
+        {
+            $filter             = $this->strFy($this->neoxBag->getFilterLocal());
+            $item               = $this->strFy([$this->Geolocation->getCountryCode()]);
+            $filteredData       = $this->getFilteredData($item, $filter);
+            
+        }
+        
+        protected function setFilterConnection(): void
+        {
+            $connection    = $this->neoxBag->getFilterConnection();
+            if (!empty($connection) && $this->Geolocation->getStatus() !== "fail" && $this->Geolocation->isProxy() ) {
+                // Send the modified response object to the event this country is not allowed
+                $this->Geolocation->setValid(false);
+            }
+        }
+        
+        protected function setFilterContinents(): void
+        {
+            $continents         = $this->strFy($this->neoxBag->getFilterContinents());
+            $filteredData       = $this->strFy([$this->Geolocation->getContinent()]);
+            $filteredData       = $this->getFilteredData($item, $filter);
+
+        }
+        
+        protected function setFilterCrawler(): void
+        {
+            $filter             = $this->strFy($this->neoxBag->getCrawler());
+            $item               = $this->strFy([$this->Geolocation->getReverse()]);
+            if ( $this->getFilteredData($item, $filter, false) ) {
+                $this->Geolocation->setValid(true);
+            }
         }
         
         /**
@@ -248,46 +266,25 @@
             return $ip;
         }
         
-        public function checkIpPing(): bool
-        {
-            $ipClient = $this->getRealIp();
-            return $this->getIpPing($ipClient);
-            
-        }
-        
-        private function stringContainsSubstringFromArray(string $mainString, array $substringsArray): bool
-        {
-            $substringsArray    = $this->strFy($substringsArray);
-            $mainString         = strtolower($mainString);
-            
-            return array_reduce($substringsArray, static function(bool $carry, string $substring) use ($mainString): bool {
-                return $carry || str_contains($mainString, $substring);
-            }, false);
-        }
-        
-        /**
-         * @throws \Exception
-         */
-        public function buildClass(string $nameService) : object
-        {
-            $className = "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService;
-            if (! class_exists($className)) {
-                throw new \Exception("Service class '{$className}' does not exist.");
-            }
-            
-            return new $className(
-                $this->router,
-                $this->parameterBag,
-                $this->httpClient,
-                $this->requestStack,
-                $this->cache,
-                $this->kernel
-            );
-        }
-
         protected function getParameter($key): UnitEnum|float|array|bool|int|string|null
         {
             return $this->parameterBag->get($key);
+        }
+        
+        /**
+         * @param array $geoDataItems
+         * @param array $geoDataFilters
+         *
+         * @return array
+         */
+        private function getFilteredData(array $geoDataItems, array $geoDataFilters, $validateGeoLocation = true): array
+        {
+            $filteredGeoData       = array_intersect($geoDataItems, $geoDataFilters);
+            if ( $validateGeoLocation ) {
+                $isGeoLocationValid            = count($filteredGeoData) > 0;
+                $this->Geolocation->setValid($isGeoLocationValid);
+            }
+            return $filteredGeoData;
         }
         
         /**
