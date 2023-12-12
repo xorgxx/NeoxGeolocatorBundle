@@ -157,6 +157,7 @@
          * Set all filter ......
          */
         
+        
         protected function setFilter(): void
         {
             $filter             = $this->strFy(array_merge($this->neoxBag->getFilterLocal(), $this->neoxBag->getFilterContinents()));
