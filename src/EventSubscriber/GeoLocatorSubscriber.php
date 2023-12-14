@@ -3,22 +3,17 @@
 namespace NeoxGeolocator\NeoxGeolocatorBundle\EventSubscriber;
 
 use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\GeolocatorFactory;
-use GuzzleHttp\Exception\GuzzleException;
-use Psr\Cache\InvalidArgumentException;
+use ReflectionException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class GeoLocatorSubscriber implements EventSubscriberInterface
 {
@@ -28,20 +23,17 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
     }
     
     /**
-     * @throws TransportExceptionInterface
      * @throws ServerExceptionInterface
      * @throws RedirectionExceptionInterface
-     * @throws GuzzleException
      * @throws ClientExceptionInterface
-     * @throws \JsonException
-     * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function onKernelRequest(RequestEvent $event): void
     {
         
         list($request, $controller, $redirectRequired, $nameRoute) = $this->handleRequest($event);
         
-        // Early return if it's not the master request | return if the controller is a profiler controller or a redirect is required
+        // Early return if it's not the master request | for DEV mode return if the controller is a profiler controller or a redirect is required
         if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType() || $this->isProfilerController($controller) || $redirectRequired) {
             return;
         }

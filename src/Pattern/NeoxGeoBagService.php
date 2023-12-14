@@ -86,7 +86,8 @@
             }
         }
         
-        private function toCamelCase($str) {
+        private function toCamelCase($str): string
+        {
             return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $str))));
         }
     }

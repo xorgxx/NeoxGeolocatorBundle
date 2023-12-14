@@ -2,11 +2,9 @@
     
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern;
     
-    use NeoxGeolocator\NeoxGeolocatorBundle\Attribute\NeoxGeoBag;
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\neoxBag;
     use Psr\Cache\InvalidArgumentException;
-    use Symfony\Component\Cache\CacheItem;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
     use Symfony\Component\HttpFoundation\RequestStack;
     use Symfony\Component\HttpKernel\KernelInterface;
@@ -25,41 +23,39 @@
         /**
          * @var RouterInterface
          */
-        protected $router;
+        protected RouterInterface $router;
         /**
          * @var ParameterBagInterface
          */
-        protected $parameterBag;
+        protected ParameterBagInterface $parameterBag;
         /**
          * @var HttpClientInterface
          */
-        protected $httpClient;
+        protected HttpClientInterface $httpClient;
         /**
          * @var RequestStack
          */
-        protected $requestStack;
+        protected RequestStack $requestStack;
         
         protected KernelInterface $kernel;
         /**
          * @var CacheInterface
          */
         protected CacheInterface $cache;
-        
-        protected array             $CDN;
-        protected array             $FILTER;
         protected GeolocationModel  $Geolocation;
         protected NeoxBag           $neoxBag;
-        private                     $ffff;
         CONST NAME                  = "geolocator - ";
         CONST FAIL                  = "fail";
         CONST COUNTNAME             = "counter-";
         
         /**
-         * @param RouterInterface $router
+         * @param RouterInterface       $router
          * @param ParameterBagInterface $parameterBag
-         * @param HttpClientInterface $httpClient
-         * @param RequestStack $requestStack
-         * @param CacheInterface $cache
+         * @param HttpClientInterface   $httpClient
+         * @param RequestStack          $requestStack
+         * @param CacheInterface        $cache
+         * @param KernelInterface       $kernel
+         * @param neoxBag               $neoxBag
          */
         public function __construct(
             RouterInterface       $router,
@@ -188,8 +184,8 @@
         
         protected function setFilterContinents(): void
         {
-            $continents         = $this->strFy($this->neoxBag->getFilterContinents());
-            $filteredData       = $this->strFy([$this->Geolocation->getContinent()]);
+            $filter             = $this->strFy($this->neoxBag->getFilterContinents());
+            $item               = $this->strFy([$this->Geolocation->getContinent()]);
             $filteredData       = $this->getFilteredData($item, $filter);
 
         }
@@ -275,10 +271,11 @@
         /**
          * @param array $geoDataItems
          * @param array $geoDataFilters
+         * @param bool  $validateGeoLocation
          *
          * @return array
          */
-        private function getFilteredData(array $geoDataItems, array $geoDataFilters, $validateGeoLocation = true): array
+        private function getFilteredData(array $geoDataItems, array $geoDataFilters, bool $validateGeoLocation = true): array
         {
             $filteredGeoData       = array_intersect($geoDataItems, $geoDataFilters);
             if ( $validateGeoLocation ) {
