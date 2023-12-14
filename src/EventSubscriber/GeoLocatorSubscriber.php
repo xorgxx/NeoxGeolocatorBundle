@@ -38,44 +38,34 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
      */
     public function onKernelRequest(RequestEvent $event): void
     {
-        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType()) {
-            // don't do anything if it's not the master request
+        
+        list($request, $controller, $redirectRequired, $nameRoute) = $this->handleRequest($event);
+        
+        // Early return if it's not the master request | return if the controller is a profiler controller or a redirect is required
+        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType() || $this->isProfilerController($controller) || $redirectRequired) {
             return;
         }
-        
-        $nameRoute		= $event->getRequest()->get('_route');
-        if (!$this->containsKeyword($nameRoute, ['profile', '_wd'])) {
-            if (!$this->geolocatorFactory->getGeolocatorService()->checkIpPing()) {
-                throw new TooManyRequestsHttpException(3600,'Too Many request. |-> BANNIS.');
-            }
-        }
-
-    }
-
-    public function onKernelController(ControllerArgumentsEvent $event): void
-    {
-        // Early return if it's not the master request
-        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType()) {
-            return;
-        }
-        
-        $request            = $event->getRequest();
-        $controller         = $request->attributes?->get('_controller');
-        $redirectRequired   = $request->server?->get('REDIRECT_URL') === "/unauthorized";
         
         // Early return if the controller is a profiler controller or a redirect is required
         if ($this->isProfilerController($controller) || $redirectRequired) {
             return;
         }
         
-        $nameRoute          = $request->get('_route');
-        $excludedRoutes     = ['profile', '_wd'];
+        if (!$this->geolocatorFactory->getGeolocatorService()->checkIpPing()) {
+            throw new TooManyRequestsHttpException(3600,'Too Many request. |-> BANNIS.');
+        }
+    }
+
+    public function onKernelController(ControllerArgumentsEvent $event): void
+    {
         
-        // Early return if the nameRoute doesn't contain any of the excluded keywords
-        if ($this->containsKeyword($nameRoute, $excludedRoutes)) {
+        list($request, $controller, $redirectRequired, $nameRoute) = $this->handleRequest($event);
+        
+        // Early return if it's not the master request | return if the controller is a profiler controller or a redirect is required
+        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType() || $this->isProfilerController($controller) || $redirectRequired) {
             return;
         }
-        
+
         $geolocator         = $this->geolocatorFactory->getGeolocatorService()->checkAuthorize();
         
         // Early return if no redirection is required
@@ -92,17 +82,19 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         return str_starts_with($controller, 'web_profiler.controller.profiler::');
     }
     
-    private function containsKeyword($haystack, array $keywords): bool
+    /**
+     * @param ControllerArgumentsEvent | RequestEvent $event
+     *
+     * @return array
+     */
+    public function handleRequest(RequestEvent|ControllerArgumentsEvent $event): array
     {
-        return array_reduce($keywords, static function (bool $carry, string $keyword) use ($haystack): bool {
-                return $carry || strpos($haystack, $keyword) !== false; // Check if keyword in string
-            }, false) && array_reduce($keywords, static function (bool $carry, string $keyword) use ($haystack): bool {
-                return $carry || strpos($haystack, $keyword) === 0; // Check if keyword at start of string
-            }, false);
+        $request            = $event->getRequest();
+        $nameRoute          = $request->get('_route');
+        $controller         = $request->attributes?->get('_controller');
+        $redirectRequired   = $request->server?->get('REDIRECT_URL') === "/unauthorized";
         
-//        return array_reduce($keywords, static function (bool $carry, string $keyword) use ($haystack): bool {
-//            return $carry || stripos($haystack, $keyword) !== false;
-//        }, false);
+        return array($request, $controller, $redirectRequired, $nameRoute);
     }
     
     public static function getSubscribedEvents(): array
