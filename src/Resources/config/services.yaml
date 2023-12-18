@@ -39,7 +39,12 @@ services:
         arguments:
             - '@Symfony\Component\HttpFoundation\RequestStack'
             - '@Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface'
-        
+    
+    NeoxGeolocator\NeoxGeolocatorBundle\Pattern\CacheManagerService:
+        arguments:
+            - '@Psr\Cache\CacheItemPoolInterface'
+            - '@Symfony\Contracts\Cache\CacheInterface'
+            
     NeoxGeolocator\NeoxGeolocatorBundle\EventSubscriber\GeoLocatorSubscriber:
         arguments:
             - '@NeoxGeolocator\NeoxGeolocatorBundle\Pattern\GeolocatorFactory'
