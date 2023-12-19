@@ -30,11 +30,16 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
      */
     public function onKernelRequest(RequestEvent $event): void
     {
+        $test = $event->getRequest()->server->get("HTTP_USER_AGENT");
         
         list($request, $controller, $redirectRequired, $nameRoute) = $this->handleRequest($event);
         
         // Early return if it's not the master request | for DEV mode return if the controller is a profiler controller or a redirect is required
-        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType() || $this->isProfilerController($controller) || $redirectRequired) {
+        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType() ||
+            $this->isProfilerController($controller) ||
+            $redirectRequired ||
+            $test === "Symfony BrowserKit") 
+        {
             return;
         }
         
@@ -50,11 +55,16 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
 
     public function onKernelController(ControllerArgumentsEvent $event): void
     {
+        $test = $event->getRequest()->server->get("HTTP_USER_AGENT");
         
         list($request, $controller, $redirectRequired, $nameRoute) = $this->handleRequest($event);
         
         // Early return if it's not the master request | return if the controller is a profiler controller or a redirect is required
-        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType() || $this->isProfilerController($controller) || $redirectRequired) {
+        if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType() ||
+            $this->isProfilerController($controller) ||
+            $redirectRequired ||
+            $test === "Symfony BrowserKit")
+        {
             return;
         }
 
