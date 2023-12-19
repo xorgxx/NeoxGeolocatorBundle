@@ -94,7 +94,7 @@
         
         private function prepareClassName(array $cdnToServiceMap, neoxBag $neoxGeoBag): string
         {
-            $service    = $cdnToServiceMap[$neoxGeoBag->getCdn()["api_use"]] ?? "IpApiService";
+            $service    = $cdnToServiceMap[$neoxGeoBag->getCdn()["api_use"]] ?? "ipApiService";
             $namespace  = "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\";
             
             return $neoxGeoBag->getCustomeApi() ?: ($namespace . $service);
