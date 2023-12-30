@@ -11,6 +11,7 @@
         public ?array       $filterConnection           = [];
         public ?array       $filterContinents           = [];
         public ?array       $crawler                    = [];
+        public ?array       $name_route_exclude         = [];
         public ?string      $name_route_unauthorized    = null;
         public ?int         $timer                      = null;
         public ?string      $check_vpn                  = null;
@@ -91,6 +92,17 @@
         public function setCrawler(?array $crawler): neoxBag
         {
             $this->crawler = $crawler;
+            return $this;
+        }
+        
+        public function getNameRouteExclude(): ?array
+        {
+            return $this->name_route_exclude;
+        }
+        
+        public function setNameRouteExclude(?array $name_route_exclude): neoxBag
+        {
+            $this->name_route_exclude = $name_route_exclude;
             return $this;
         }
         

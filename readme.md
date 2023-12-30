@@ -89,7 +89,11 @@ It set automatique but you can custom (by default)
           - "CCBot"
           - "GoogleOther"
           - "Google-InspectionTool"
-        
+          
+      name_route_exclude:     # all this name-route will be excluded form the geolocator !!!
+          - "Seo_unauthorized"
+          - "app_home_profile_crud_alert"  
+          
       name_route_unauthorized: "Seo_unauthorized"
       timer: 10
       check_vpn: "seo_check_vpn" >>> name route to redirect when detect no id session yet 

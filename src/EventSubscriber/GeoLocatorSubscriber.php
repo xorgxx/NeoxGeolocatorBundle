@@ -44,7 +44,7 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         }
         
         // Early return if the controller is a profiler controller or a redirect is required
-        if ($this->isProfilerController($controller) || $redirectRequired) {
+        if ($this->isProfilerController($controller) || $redirectRequired || $this->isRouteNameExclude($nameRoute)) {
             return;
         }
         
@@ -62,6 +62,7 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         // Early return if it's not the master request | return if the controller is a profiler controller or a redirect is required
         if (HttpKernelInterface::MAIN_REQUEST !== $event->getRequestType() ||
             $this->isProfilerController($controller) ||
+            $this->isRouteNameExclude($nameRoute) ||
             $redirectRequired ||
             $test === "Symfony BrowserKit")
         {
@@ -77,6 +78,13 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         
         $response           = new RedirectResponse($geolocator);
         $event->setController(fn() => $response);
+    }
+    
+    private function isRouteNameExclude($CurrentNameRoute): bool
+    {
+        $nameRouteExclude       = $this->geolocatorFactory->getGeolocatorService()->getNeoxBag()->getNameRouteExclude() ?? [];
+        $filteredGeoData        = count(array_intersect([$CurrentNameRoute], $nameRouteExclude)) > 0;
+        return $filteredGeoData;
     }
     
     private function isProfilerController($controller): bool

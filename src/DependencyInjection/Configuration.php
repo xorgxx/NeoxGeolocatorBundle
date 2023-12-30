@@ -65,6 +65,7 @@ final class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
             ->arrayNode('crawler')->scalarPrototype()->end()->end()
+            ->arrayNode('name_route_exclude')->scalarPrototype()->end()->end()
             ->scalarNode('name_route_unauthorized')->defaultValue('Seo_unauthorized')->end()
             ->scalarNode('timer')->defaultValue(3600)->end()
             ->end()

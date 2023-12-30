@@ -42,6 +42,7 @@
             public ?array       $filterConnection           = [],
             public ?array       $filterContinents           = [],
             public ?array       $crawler                    = [],
+            public ?array       $name_route_exclude         = [],
             public ?string      $name_route_unauthorized    = null,
             public ?int         $timer                      = null,
             public ?string      $check_vpn                  = null,

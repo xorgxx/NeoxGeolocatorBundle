@@ -60,6 +60,7 @@
                 ->setFilterConnection($this->neoxBagParams ['filter']['connection'] ?? [])
                 ->setFilterContinents($this->neoxBagParams ['filter']['continents'] ?? [])
                 ->setCrawler($this->neoxBagParams ['crawler'] ?? [])
+                ->setNameRouteExclude($this->neoxBagParams ['name_route_exclude'] ?? null)
                 ->setNameRouteUnauthorized($this->neoxBagParams ['name_route_unauthorized'] ?? null)
                 ->setTimer($this->neoxBagParams ['timer'] ?? null)
                 ->setCheckVpn($this->neoxBagParams ['check_vpn'] ?? null)
