@@ -2,10 +2,12 @@
     
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern;
     
+    use NeoxGeolocator\NeoxGeolocatorBundle\Event\NeoxGeolocatorEvents;
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\neoxBag;
     use Psr\Cache\InvalidArgumentException;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+    use Symfony\Component\EventDispatcher\EventDispatcherInterface;
     use Symfony\Component\HttpFoundation\RequestStack;
     use Symfony\Component\HttpKernel\KernelInterface;
     use Symfony\Component\Routing\RouterInterface;
@@ -44,6 +46,8 @@
         protected CacheInterface $cache;
         protected GeolocationModel  $Geolocation;
         protected NeoxBag           $neoxBag;
+        protected EventDispatcherInterface $dispatcher;
+        
         CONST NAME                  = "geolocator - ";
         CONST FAIL                  = "fail";
         CONST COUNTNAME             = "counter-";
@@ -56,6 +60,7 @@
          * @param CacheInterface        $cache
          * @param KernelInterface       $kernel
          * @param neoxBag               $neoxBag
+         * @param EventDispatcherInterface $dispatcher
          */
         public function __construct(
             RouterInterface       $router,
@@ -64,7 +69,8 @@
             RequestStack          $requestStack,
             CacheInterface        $cache,
             KernelInterface       $kernel,
-            NeoxBag               $neoxBag
+            NeoxBag               $neoxBag,
+            EventDispatcherInterface $dispatcher
         )
         {
             
@@ -75,6 +81,8 @@
             $this->cache            = $cache;
             $this->kernel           = $kernel;
             $this->neoxBag          = $neoxBag;
+            $this->dispatcher       = $dispatcher;
+            
 //            $this->CDN              = $this->neoxBag->getCdn();
 //            $this->FILTER           = $this->neoxBag->getFilterLocal() + $this->neoxBag->getFilterConnection() + $this->neoxBag->getFilterContinents();
         
@@ -113,12 +121,19 @@
                 return $geolocation;
             });
             
+            // dispatch the GeolocationModel in geolocatorDispatcher
+            $event = new NeoxGeolocatorEvents($value);
+            
             /** @var geolocationModel $value*/
             if (!$value->isValid()) {
+                
+                $this->dispatcher->dispatch($event, NeoxGeolocatorEvents::NEOX_GEOLOCATOR_FAIL);
+                
                 $route = $this->neoxBag->getNameRouteUnauthorized();
                 return $this->router->generate($route);
             }
             
+            $this->dispatcher->dispatch($event, NeoxGeolocatorEvents::NEOX_GEOLOCATOR_PASS);
             return true;
         }
         

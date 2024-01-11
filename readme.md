@@ -305,7 +305,45 @@ This file have structure :
     }
 
 ```
+* Add Event listner on 3 events :
 
+        const NEOX_GEOLOCATOR_EVENT     = 'neox.geolocator.event';
+        const NEOX_GEOLOCATOR_PASS      = 'neox.geolocator.pass';
+        const NEOX_GEOLOCATOR_FAIL      = 'neox.geolocator.fail';
+
+so now you can create you own way to get statistics !!
+in your app : App\EventSubscriber
+````php
+<?php
+    
+    namespace App\EventSubscriber;
+    
+    use NeoxGeolocator\NeoxGeolocatorBundle\Event\NeoxGeolocatorEvents;
+    use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+    
+    class NeoxGeolocatorSubscriber implements EventSubscriberInterface
+    {
+        
+        /**
+         * @inheritDoc
+         */
+        public static function getSubscribedEvents(): array
+        {
+            return [
+                NeoxGeolocatorEvents::NEOX_GEOLOCATOR_EVENT => 'onCustomEvent',
+                NeoxGeolocatorEvents::NEOX_GEOLOCATOR_PASS  => 'onCustomEvent',
+                NeoxGeolocatorEvents::NEOX_GEOLOCATOR_FAIL  => 'onCustomEvent',
+            ];
+        }
+        
+        public function onCustomEvent(NeoxGeolocatorEvents $event): void
+        {
+            // Faire quelque chose avec l'événement
+            $neoxGeolocationModel = $event->getGeolocationModel();
+            ......
+        }
+    }
+````
 ## Tools !
 
 

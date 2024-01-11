@@ -4,6 +4,7 @@
     
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\neoxBag;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+    use Symfony\Component\EventDispatcher\EventDispatcherInterface;
     use Symfony\Component\HttpFoundation\RequestStack;
     use Symfony\Component\HttpKernel\KernelInterface;
     use Symfony\Component\Routing\RouterInterface;
@@ -47,6 +48,7 @@
          * @param HttpClientInterface $httpClient
          * @param RequestStack $requestStack
          * @param CacheInterface $cache
+         * @param EventDispatcherInterface $dispatcher
          */
         public function __construct(
             RouterInterface         $router,
@@ -56,6 +58,7 @@
             CacheInterface          $cache,
             KernelInterface         $kernel,
             NeoxGeoBagService       $neoxGeoBagService,
+            EventDispatcherInterface $dispatcher,
         )
         {
             
@@ -66,6 +69,7 @@
             $this->cache                    = $cache;
             $this->kernel                   = $kernel;
             $this->neoxGeoBagService        = $neoxGeoBagService;
+            $this->dispatcher               = $dispatcher;
 //            $this->CDN              = $this->getParameter("neox_geolocator.cdn");
 //            $this->FILTER           = $this->getParameter("neox_geolocator.filter");
         
@@ -113,7 +117,8 @@
                     $this->requestStack,
                     $this->cache,
                     $this->kernel,
-                    $neoxGeoBag
+                    $neoxGeoBag,
+                    $this->dispatcher
                 );
             }
         }
