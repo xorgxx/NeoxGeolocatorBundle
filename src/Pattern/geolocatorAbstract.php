@@ -3,7 +3,7 @@
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern;
     
     use NeoxGeolocator\NeoxGeolocatorBundle\Event\NeoxGeolocatorEvents;
-    use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Entity\Geolocation;
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\neoxBag;
     use Psr\Cache\InvalidArgumentException;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -44,7 +44,7 @@
          * @var CacheInterface
          */
         protected CacheInterface $cache;
-        protected GeolocationModel  $Geolocation;
+        protected Geolocation  $Geolocation;
         protected NeoxBag           $neoxBag;
         protected EventDispatcherInterface $dispatcher;
         
@@ -124,7 +124,7 @@
             // dispatch the GeolocationModel in geolocatorDispatcher
             $event = new NeoxGeolocatorEvents($value);
             
-            /** @var geolocationModel $value*/
+            /** @var Geolocation $value*/
             if (!$value->isValid()) {
                 
                 $this->dispatcher->dispatch($event, NeoxGeolocatorEvents::NEOX_GEOLOCATOR_FAIL);

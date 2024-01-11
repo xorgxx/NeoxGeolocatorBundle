@@ -7,7 +7,7 @@
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Event;
     
     use App\Entity\SubscriberNewsLetter;
-    use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Entity\Geolocation;
     use Symfony\Contracts\EventDispatcher\Event;
     
     /**
@@ -26,16 +26,16 @@
          * @Event("App\EventSubscriber\EmailSendSubscriber")
          */
         
-        public GeolocationModel $geolocationModel;
+        public Geolocation $geolocation;
         
-        public function __construct( GeolocationModel $geolocationModel)
+        public function __construct( Geolocation $geolocation)
         {
-            $this->geolocationModel = $geolocationModel;
+            $this->geolocation = $geolocation;
         }
         
-        public function getGeolocationModel(): GeolocationModel
+        public function getGeolocation(): Geolocation
         {
-            return $this->geolocationModel;
+            return $this->geolocation;
         }
         
         

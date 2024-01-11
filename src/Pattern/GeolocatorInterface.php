@@ -2,13 +2,13 @@
     
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern;
     
-    use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Entity\Geolocation;
     
     interface GeolocatorInterface
     {
         
-        public function Geolocator(): GeolocationModel;
+        public function Geolocator(): Geolocation;
         
-        public function getInfoCdn() : GeolocationModel ;
+        public function getInfoCdn() : Geolocation;
         
     }

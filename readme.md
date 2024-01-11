@@ -219,7 +219,7 @@ This file have structure :
 ```php
     namespace App\Services;
     
-    use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Entity\Geolocation;
     use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\geolocatorAbstract;
     use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\GeolocatorInterface;
     use Psr\Cache\InvalidArgumentException;
@@ -233,7 +233,7 @@ This file have structure :
     
     class ipApiService extends geolocatorAbstract implements GeolocatorInterface
     {
-        public function Geolocator(): geolocationModel
+        public function Geolocator(): Geolocation
         {
             
             // get geolocation
@@ -258,7 +258,7 @@ This file have structure :
             // TODO: Implement Geolocator() method.
         }
         
-        public function getInfoCdn(): GeolocationModel{
+        public function getInfoCdn(): Geolocation{
             
             // check ip
             // $currentIp = $ipCheck ?: $this->httpClient->request('GET', $this->CDN["ip"] )->getContent();
@@ -273,10 +273,10 @@ This file have structure :
                 
                 # for adaptation data 2 options
                 # FIRST OPTION
-                return GeolocationModel::fromJson($data); 
+                return Geolocation::fromJson($data); 
                 
                 # SECOND OPTION
-                $geolocationModel   = new GeolocationModel();
+                $geolocation   = new Geolocation();
                     $geolocationModel->setstatus('success')               // = ;
                     ->setcontinent($o["continent"]["names"]["fr"])          // = 'Europe';
                     ->setcontinentCode($o["continent"]["code"])             // = 'EU';
@@ -295,7 +295,7 @@ This file have structure :
                     ->setvalid(true)            // = true;
                 ;
             
-              return $geolocationModel;
+              return $geolocation;
             }else{
                 /** @var geolocatorAbstract $class */
                 $class = $this->buildClass("findIpService");
@@ -305,7 +305,7 @@ This file have structure :
     }
 
 ```
-* Add Event listner on 3 events :
+* Add Event listener on 3 events :
 
         const NEOX_GEOLOCATOR_EVENT     = 'neox.geolocator.event';
         const NEOX_GEOLOCATOR_PASS      = 'neox.geolocator.pass';
@@ -339,7 +339,7 @@ in your app : App\EventSubscriber
         public function onCustomEvent(NeoxGeolocatorEvents $event): void
         {
             // Faire quelque chose avec l'événement
-            $neoxGeolocationModel = $event->getGeolocationModel();
+            $neoxGeolocation = $event->getGeolocation();
             ......
         }
     }

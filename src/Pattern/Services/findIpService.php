@@ -2,7 +2,7 @@
     
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern\Services;
     
-    use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Entity\Geolocation;
     use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\geolocatorAbstract;
     use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\GeolocatorInterface;
     use Psr\Cache\InvalidArgumentException;
@@ -14,7 +14,7 @@
     
     class findIpService extends geolocatorAbstract implements GeolocatorInterface
     {
-        public function Geolocator(): geolocationModel
+        public function Geolocator(): Geolocation
         {
             // get geolocation
             $this->Geolocation = $this->getInfoCdn();
@@ -32,7 +32,7 @@
          * @throws TransportExceptionInterface
          * @throws ServerExceptionInterface
          */
-        public function getInfoCdn(): GeolocationModel{
+        public function getInfoCdn(): Geolocation{
             
             // check ip 
             // https://api.findip.net/66.228.119.72/?token=xxxxxxxxxx
@@ -41,8 +41,8 @@
             $api            = "http://api." . $this->neoxBag->getCdn()["api_use"] . "/$currentIp/?token=" . $this->neoxBag->getCdn()['api_key'];
             // todo: check if this expires !!!
             $data           = json_decode($this->senApi( $api ), true);
-            $geolocationModel   = new GeolocationModel();
-            $geolocationModel->setstatus('success')               // = ;
+            $geolocation   = new Geolocation();
+            $geolocation->setstatus('success')               // = ;
                 ->setcontinent($data["continent"]["names"]["fr"] ?? 'Europe' )          // = 'Europe';
                 ->setcontinentCode($data["continent"]["code"] ?? 'EU')             // = 'EU';
                 ->setcountry($data["country"]["names"]["en"] ?? 'France')              // = 'France';
@@ -69,7 +69,7 @@
 //                'user_type' => 'hosting',
 //            )
             
-            return $geolocationModel;
+            return $geolocation;
         }
         
 

@@ -2,7 +2,7 @@
     
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern\Services;
     
-    use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Entity\Geolocation;
     use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\geolocatorAbstract;
     use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\GeolocatorInterface;
     use Psr\Cache\InvalidArgumentException;
@@ -16,7 +16,7 @@
     
     class ipApiService extends geolocatorAbstract implements GeolocatorInterface
     {
-        public function Geolocator(): geolocationModel
+        public function Geolocator(): Geolocation
         {
             // get geolocation
             $this->Geolocation = $this->getInfoCdn();
@@ -34,7 +34,7 @@
          * @throws ClientExceptionInterface
          * @throws \JsonException
          */
-        public function getInfoCdn(): GeolocationModel{
+        public function getInfoCdn(): Geolocation{
             
             // check ip
             // $currentIp = $ipCheck ?: $this->httpClient->request('GET', $this->CDN["ip"] )->getContent();
@@ -46,7 +46,7 @@
                 // todo: check if this expires !!!
                 $data  = $this->senApi( $api );
                 
-                return GeolocationModel::fromJson($data);
+                return Geolocation::fromJson($data);
             }
             
             /** @var geolocatorAbstract $class */

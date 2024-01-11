@@ -2,7 +2,7 @@
     
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern\Services;
     
-    use NeoxGeolocator\NeoxGeolocatorBundle\Model\GeolocationModel;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Entity\Geolocation;
     use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\geolocatorAbstract;
     use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\GeolocatorInterface;
     use Psr\Cache\InvalidArgumentException;
@@ -14,7 +14,7 @@
     
     class getipintelService extends geolocatorAbstract implements GeolocatorInterface
     {
-        public function Geolocator(): geolocationModel
+        public function Geolocator(): Geolocation
         {
             // get geolocation
             $this->Geolocation = $this->getInfoCdn();
@@ -32,7 +32,7 @@
          * @throws TransportExceptionInterface
          * @throws ServerExceptionInterface
          */
-        public function getInfoCdn(): GeolocationModel{
+        public function getInfoCdn(): Geolocation{
             
             // check ip "http://check.getipintel.net/check.php"
            // http://check.getipintel.net/check.php?ip=66.228.119.72&contact=dede@aol.com&format=json&flags=b
@@ -41,7 +41,7 @@
             // todo: check if this expires !!!
             $response_      = $this->senApi( $api );
             $o = json_decode($response_->getContent(), true, 512, JSON_THROW_ON_ERROR);
-            return GeolocationModel::fromJson($response_->getContent());
+            return Geolocation::fromJson($response_->getContent());
         }
         
 
