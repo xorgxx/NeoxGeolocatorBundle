@@ -8,6 +8,7 @@
     
     use App\Entity\SubscriberNewsLetter;
     use NeoxGeolocator\NeoxGeolocatorBundle\Entity\Geolocation;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Repository\GeolocationRepository;
     use Symfony\Contracts\EventDispatcher\Event;
     
     /**
@@ -30,13 +31,13 @@
         
         public function __construct( Geolocation $geolocation)
         {
-            $this->geolocation = $geolocation;
+            $this->geolocation              = $geolocation;
+
         }
         
         public function getGeolocation(): Geolocation
         {
             return $this->geolocation;
         }
-        
         
     }

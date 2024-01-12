@@ -2,14 +2,18 @@
     
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Entity;
     
+    use NeoxGeolocator\NeoxGeolocatorBundle\Entity\Traits\TimeStampable;
     use NeoxGeolocator\NeoxGeolocatorBundle\Repository\GeolocationRepository;
     use Doctrine\ORM\Mapping as ORM;
     use Doctrine\DBAL\Types\Types;
     
     #[ORM\Entity(repositoryClass: GeolocationRepository::class)]
+    #[ORM\HasLifecycleCallbacks]
     
     class Geolocation
     {
+        use TimeStampable;
+        
         #[ORM\Id]
         #[ORM\GeneratedValue]
         #[ORM\Column]

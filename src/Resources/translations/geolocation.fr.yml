@@ -1,0 +1,65 @@
+# src/Acme/DemoBundle/Resources/translations/messages.fr.yml
+geolocation:
+    home:
+        title: Geolocation
+        sub-title: Interface
+    setup-tool:
+        title: Menu
+    form:
+        ADD-YOUR-FIELDS.label: Geolocation Controller->index->filterFields([ICI])
+        add.label: Ajouter
+        update.label: Modifier
+        delete.label: Supprimer
+        delete.msg.label : Êtes-vous sûr de bien vouloir supprimer cet élément ?
+        pin.publish.1 : Êtes-vous sûr de bien vouloir de-publier cet élément ?
+        pin.publish.0 : Êtes-vous sûr de bien vouloir publier cet élément ?
+        save.label: Enregistrer
+        home:
+            title: Geolocation Manager
+            title-edit: Edit Geolocation
+            title-new: New Geolocation
+        status:
+            label: Status
+            placeholder: Saisir un status ...
+        continent:
+            label: Continent
+            placeholder: Saisir nom un pour le continent ...
+        continentCode:
+            label: Continent code
+            placeholder: Saisir nom un pour le tags ...
+        country:
+            label: Pays
+            placeholder: Saisir nom un pour le tags ...
+        countryCode:
+            label: Pays code
+            placeholder: Saisir nom un pour le tags ...
+        regionName:
+            label: Region
+            placeholder: Saisir nom un pour le tags ...
+        city:
+            label: Ville
+            placeholder: Saisir nom un pour le tags ...
+        zip:
+            label: CP
+            placeholder: Saisir nom un pour le tags ...
+        lat:
+            label: Latitude
+            placeholder: Saisir nom un pour le tags ...
+        lon:
+            label: Longitude
+            placeholder: Saisir nom un pour le tags ...
+        reverse:
+            label: Reverse
+            placeholder: Saisir nom un pour le tags ...
+        mobile:
+            label: Mobile
+            placeholder: Saisir nom un pour le tags ...
+        hosting:
+            label: Hosting
+            placeholder: Saisir nom un pour le tags ...
+        query:
+            label: Query
+            placeholder: Saisir nom un pour le tags ...
+        valid:
+            label: Valid
+            placeholder: Saisir nom un pour le tags ...
