@@ -42,7 +42,7 @@
             // todo: check if this expires !!!
             $data           = json_decode($this->senApi( $api ), true);
             $geolocation   = new Geolocation();
-            $geolocation->setstatus('success')               // = ;
+            $geolocation->setstatus('findip')               // = ;
                 ->setcontinent($data["continent"]["names"]["fr"] ?? 'Europe' )          // = 'Europe';
                 ->setcontinentCode($data["continent"]["code"] ?? 'EU')             // = 'EU';
                 ->setcountry($data["country"]["names"]["en"] ?? 'France')              // = 'France';
@@ -53,7 +53,7 @@
                 ->setlat($data["location"]["latitude"] ?? 40.6951)                    // = 40.6951;
                 ->setlon($data["location"]["longitude"] ?? 20.325)                   // = 20.325;
                 ->setreverse($data["traits"]["isp"] ?? 'unn-156-146-55-226.cdn')                       // = 'unn-156-146-55-226.cdn';
-                ->setmobile('nc')                                 // = false;
+                ->setmobile($data["traits"]["mobile"] ?? false)                                 // = false;
                 ->setproxy($data["traits"]["connection_type"] === 'Corporate')     // = false;
                 ->sethosting($data["traits"]["user_type"] === 'hosting')           // = false;
                 ->setquery($currentIp)           // = '156.146.55.226';

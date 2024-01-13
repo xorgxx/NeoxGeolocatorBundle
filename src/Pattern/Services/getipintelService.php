@@ -41,7 +41,7 @@
             // todo: check if this expires !!!
             $response_      = $this->senApi( $api );
             $o = json_decode($response_->getContent(), true, 512, JSON_THROW_ON_ERROR);
-            return Geolocation::fromJson($response_->getContent());
+            return Geolocation::fromJson($response_->getContent(), "getipintel.net");
         }
         
 

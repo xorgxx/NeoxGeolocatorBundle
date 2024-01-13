@@ -54,6 +54,9 @@ geolocation:
         mobile:
             label: Mobile
             placeholder: Saisir nom un pour le tags ...
+        proxy:
+            label: Proxy
+            placeholder: Saisir nom un pour le tags ...
         hosting:
             label: Hosting
             placeholder: Saisir nom un pour le tags ...
@@ -64,8 +67,8 @@ geolocation:
             label: Valid
             placeholder: Saisir nom un pour le tags ...
         createdAt:
-            label: Creation
+            label: createdAt
             placeholder: Saisir nom un pour le tags ...
         updatedAt:
-            label: MAJ
+            label: updatedAt
             placeholder: Saisir nom un pour le tags ...

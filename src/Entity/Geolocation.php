@@ -273,7 +273,7 @@
         /**
          * @throws \JsonException
          */
-        public static function fromJson($json): self
+        public static function fromJson($json, string $url= "mock"): self
         {
             $data = json_decode($json, true, 512, JSON_ERROR_NONE) ? : null;
 //            if ($data === 'fail' || $data === '') {
@@ -297,7 +297,7 @@
 //            }
 
             return new self(
-                $data['status'] ?? 'mock' ,
+                $url ,
                 $data['continent'] ?? 'Europe',
                 $data['continentCode'] ?? 'EU',
                 $data['country'] ?? 'France',

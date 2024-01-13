@@ -46,7 +46,7 @@
                 // todo: check if this expires !!!
                 $data  = $this->senApi( $api );
                 
-                return Geolocation::fromJson($data);
+                return Geolocation::fromJson($data,'ipapi' );
             }
             
             /** @var geolocatorAbstract $class */
