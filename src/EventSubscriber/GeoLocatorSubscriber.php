@@ -15,6 +15,7 @@ use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 
+#[\AllowDynamicProperties]
 class GeoLocatorSubscriber implements EventSubscriberInterface
 {
     public function __construct( GeolocatorFactory $geolocatorFactory )

@@ -11,6 +11,7 @@
     use Symfony\Contracts\Cache\CacheInterface;
     use Symfony\Contracts\HttpClient\HttpClientInterface;
     
+    #[\AllowDynamicProperties]
     class GeolocatorFactory
     {
         /**
