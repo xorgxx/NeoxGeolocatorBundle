@@ -66,6 +66,9 @@ geolocation:
         valid:
             label: Valid
             placeholder: Saisir nom un pour le tags ...
+        route:
+            label: Route
+            placeholder: Saisir nom un pour le tags ...
         createdAt:
             label: createdAt
             placeholder: Saisir nom un pour le tags ...
