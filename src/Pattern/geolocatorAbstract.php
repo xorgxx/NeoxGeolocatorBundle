@@ -124,6 +124,10 @@
             // dispatch the GeolocationModel in geolocatorDispatcher
             $event = new NeoxGeolocatorEvents($value);
             
+            // add route to Db
+            $nameRoute          = $this->requestStack->getCurrentRequest()->attributes->get('_route');
+            $value->setRoute($nameRoute);
+            
             /** @var Geolocation $value*/
             if (!$value->isValid()) {
                 

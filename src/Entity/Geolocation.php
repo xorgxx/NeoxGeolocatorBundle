@@ -50,6 +50,8 @@
         public string $query;
         #[ORM\Column(nullable: true)]
         public bool $valid;
+        #[ORM\Column(length: 150,nullable: true)]
+        public ?string $route;
         
         
         public function __construct(
@@ -68,7 +70,8 @@
             $proxy          = true,
             $hosting        = true,
             $query          = '156.146.55.226',
-            $valid          = true
+            $valid          = true,
+            $route          = "nc"
         ) {
             $this->status       = $status;
             $this->continent    = $continent;
@@ -86,6 +89,7 @@
             $this->hosting      = $hosting;
             $this->query        = $query;
             $this->valid        = $valid;
+            $this->route        = $route;
         }
         
         public function getId(): ?int
@@ -269,6 +273,18 @@
             return $this;
         }
         
+        public function getRoute(): ?string
+        {
+            return $this->route;
+        }
+        
+        public function setRoute(?string $route): Geolocation
+        {
+            $this->route = $route;
+            return $this;
+        }
+        
+        
 
         /**
          * @throws \JsonException
@@ -312,7 +328,8 @@
                 $data['proxy']  ?? false,
                 $data['hosting'] ?? false,
                 $data['query'] ?? '156.146.55.226',
-                $data['valid'] = true
+                $data['valid'] = true,
+                $data['route'] = "nc"
             );
         }
         
@@ -335,6 +352,7 @@
                 'hosting'       => $this->hosting,
                 'query'         => $this->query,
                 'valid'         => $this->valid,
+                'route'         => $this->route,
             ];
         }
     }
