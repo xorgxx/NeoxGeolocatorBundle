@@ -35,7 +35,7 @@ return [
 
 ## Configuration
 * Install and configure  ==> [Symfony config](https://symfony.com/doc/current/notifier.html#installation)
-* Creat neox_geolocator.yaml in config folder
+* Create neox_geolocator.yaml in config folder
 ```
 └─── config
 │   └─── packages
