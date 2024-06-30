@@ -80,12 +80,14 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         $response           = new RedirectResponse($geolocator);
         $event->setController(fn() => $response);
     }
-    
+
+    /**
+     * @throws ReflectionException
+     */
     private function isRouteNameExclude($CurrentNameRoute): bool
     {
         $nameRouteExclude       = $this->geolocatorFactory->getGeolocatorService()->getNeoxBag()->getNameRouteExclude() ?? [];
-        $filteredGeoData        = count(array_intersect([$CurrentNameRoute], $nameRouteExclude)) > 0;
-        return $filteredGeoData;
+        return count(array_intersect([$CurrentNameRoute], $nameRouteExclude)) > 0;
     }
     
     private function isProfilerController($controller): bool

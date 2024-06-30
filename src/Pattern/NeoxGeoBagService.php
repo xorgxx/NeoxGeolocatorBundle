@@ -5,6 +5,7 @@
     use NeoxGeolocator\NeoxGeolocatorBundle\Attribute\NeoxGeoBag;
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\neoxBag;
     use ReflectionClass;
+    use ReflectionException;
     use ReflectionMethod;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
     use Symfony\Component\HttpFoundation\RequestStack;
@@ -20,7 +21,10 @@
         {
         
         }
-        
+
+        /**
+         * @throws ReflectionException
+         */
         public function getneoxBag(): neoxBag
         {
             if (!$this->neoxBag) {
@@ -28,7 +32,10 @@
             }
             return $this->neoxBag;
         }
-        
+
+        /**
+         * @throws ReflectionException
+         */
         public function setNeoxBag(): neoxBag
         {
             // first apply seo settings from configuration
@@ -68,10 +75,19 @@
                 ->setForcer($this->neoxBagParams ['forcer'] ?? false)
             ;
         }
-        
+
+        /**
+         * @throws ReflectionException
+         */
         private function getAttributesFromControllerAndMethod(): array
         {
             $this->getInfoAboutCurrentRequest();
+
+            // if the controller is empty, we don't need to get the attributes
+            if ($this->controller === "null") {
+                return [];
+            }
+            
             $classAttributes    = (new ReflectionClass($this->controller))->getAttributes(NeoxGeoBag::class);
             $methodAttributes   = (new ReflectionMethod($this->controller, $this->action))->getAttributes(NeoxGeoBag::class);
             return array_merge($classAttributes, $methodAttributes);
@@ -83,7 +99,13 @@
             
             if ($request) {
                 $controllerName = $request->attributes->get('_controller');
-                list($this->controller, $this->action) = explode('::', $controllerName);
+                if ($controllerName) {
+                    list($this->controller, $this->action) = explode('::', $controllerName);
+                }else{
+                    // if the controller is empty, create a fake array to avoid errors
+                    list($this->controller, $this->action) = ["null", "null"];
+                }
+
             }
         }
         
