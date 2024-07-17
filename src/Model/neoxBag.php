@@ -17,6 +17,7 @@
         public ?string      $check_vpn                  = null;
         public ?array       $check_ping                 = [];
         public ?bool        $forcer                     = false;
+        public ?array       $filterLocalRangeIp         = [];
         
         public function getIpLocalDev(): ?string
         {
@@ -160,6 +161,16 @@
             $this->forcer = $forcer;
             return $this;
         }
-        
+
+        public function getFilterLocalRangeIp(): ?array
+        {
+            return $this->filterLocalRangeIp;
+        }
+
+        public function setFilterLocalRangeIp(?array $filterLocalRangeIp): neoxBag
+        {
+            $this->filterLocalRangeIp = $filterLocalRangeIp;
+            return $this;
+        }
     }
     

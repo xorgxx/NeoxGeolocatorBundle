@@ -1,7 +1,7 @@
 <?php
-    
+
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern;
-    
+
     use NeoxGeolocator\NeoxGeolocatorBundle\Event\NeoxGeolocatorEvents;
     use NeoxGeolocator\NeoxGeolocatorBundle\Entity\Geolocation;
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\neoxBag;
@@ -19,8 +19,8 @@
     use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
     use Symfony\Contracts\HttpClient\HttpClientInterface;
     use UnitEnum;
-    
-    Abstract class geolocatorAbstract
+
+    abstract class geolocatorAbstract
     {
         /**
          * @var RouterInterface
@@ -38,58 +38,59 @@
          * @var RequestStack
          */
         protected RequestStack $requestStack;
-        
+
         protected KernelInterface $kernel;
         /**
          * @var CacheInterface
          */
-        protected CacheInterface $cache;
-        protected Geolocation  $Geolocation;
-        protected NeoxBag           $neoxBag;
+        protected CacheInterface           $cache;
+        protected Geolocation              $Geolocation;
+        protected NeoxBag                  $neoxBag;
         protected EventDispatcherInterface $dispatcher;
-        
-        CONST NAME                  = "geolocator - ";
-        CONST FAIL                  = "fail";
-        CONST COUNTNAME             = "counter-";
-        
+
+        const NAME      = "geolocator - ";
+        const FAIL      = "fail";
+        const COUNTNAME = "counter-";
+
         /**
-         * @param RouterInterface       $router
-         * @param ParameterBagInterface $parameterBag
-         * @param HttpClientInterface   $httpClient
-         * @param RequestStack          $requestStack
-         * @param CacheInterface        $cache
-         * @param KernelInterface       $kernel
-         * @param neoxBag               $neoxBag
+         * @param RouterInterface          $router
+         * @param ParameterBagInterface    $parameterBag
+         * @param HttpClientInterface      $httpClient
+         * @param RequestStack             $requestStack
+         * @param CacheInterface           $cache
+         * @param KernelInterface          $kernel
+         * @param neoxBag                  $neoxBag
          * @param EventDispatcherInterface $dispatcher
          */
         public function __construct(
-            RouterInterface       $router,
-            ParameterBagInterface $parameterBag,
-            HttpClientInterface   $httpClient,
-            RequestStack          $requestStack,
-            CacheInterface        $cache,
-            KernelInterface       $kernel,
-            NeoxBag               $neoxBag,
+            RouterInterface          $router,
+            ParameterBagInterface    $parameterBag,
+            HttpClientInterface      $httpClient,
+            RequestStack             $requestStack,
+            CacheInterface           $cache,
+            KernelInterface          $kernel,
+            NeoxBag                  $neoxBag,
             EventDispatcherInterface $dispatcher
         )
         {
-            
-            $this->router           = $router;
-            $this->parameterBag     = $parameterBag;
-            $this->httpClient       = $httpClient;
-            $this->requestStack     = $requestStack;
-            $this->cache            = $cache;
-            $this->kernel           = $kernel;
-            $this->neoxBag          = $neoxBag;
-            $this->dispatcher       = $dispatcher;
-            
+
+            $this->router       = $router;
+            $this->parameterBag = $parameterBag;
+            $this->httpClient   = $httpClient;
+            $this->requestStack = $requestStack;
+            $this->cache        = $cache;
+            $this->kernel       = $kernel;
+            $this->neoxBag      = $neoxBag;
+            $this->dispatcher   = $dispatcher;
+
 //            $this->CDN              = $this->neoxBag->getCdn();
 //            $this->FILTER           = $this->neoxBag->getFilterLocal() + $this->neoxBag->getFilterConnection() + $this->neoxBag->getFilterContinents();
-        
+
         }
-        
- 
+
+
         use Limitor;
+
         /**
          * @throws RedirectionExceptionInterface
          * @throws ClientExceptionInterface
@@ -99,65 +100,70 @@
          */
         public function checkAuthorize(): bool|string
         {
+
+            if ( $this->setFilterLocalRangeIp() ) {
+                return true;
+            }
+
             // cache to optimize ux : check very 1 hour security raison
             // First check have no id session yet so we nock one to pass, expire will be very short
             // lake this next clic anywhere be check again !!! this time id session will be create
-            $this->requestStack->getSession()->set("geo","id");
-            
+            $this->requestStack->getSession()->set("geo", "id");
+
             list($timer, $session) = $this->setTimer();
-            
+
             // Force geolocation !!!
             // 1 - delete old one
             // 2 - create new one with new timestamp and geolocator
-            if ( $this->neoxBag->getForcer() ) {
+            if ($this->neoxBag->getForcer()) {
                 $this->deleteCounterCache(self::NAME . $session);
             }
-            
+
             // Redis manage storage with expiration !!
-            $value  = $this->cache->get( self::NAME . $session, function (ItemInterface $item) use ($timer)  {
-                $geolocation    = $this->Geolocator();
-                $timer          = $geolocation->getStatus() === self::FAIL ? 10 : $timer;
-                $item->expiresAfter( (int) $timer); // 3600 = 1 hour
+            $value = $this->cache->get(self::NAME . $session, function (ItemInterface $item) use ($timer) {
+                $geolocation = $this->Geolocator();
+                $timer       = $geolocation->getStatus() === self::FAIL ? 10 : $timer;
+                $item->expiresAfter((int)$timer); // 3600 = 1 hour
                 return $geolocation;
             });
-            
+
             // dispatch the GeolocationModel in geolocatorDispatcher
             $event = new NeoxGeolocatorEvents($value);
-            
+
             // add route to Db
-            $nameRoute          = $this->requestStack->getCurrentRequest()->attributes->get('_route');
+            $nameRoute = $this->requestStack->getCurrentRequest()->attributes->get('_route');
             $value->setRoute($nameRoute);
-            
-            /** @var Geolocation $value*/
+
+            /** @var Geolocation $value */
             if (!$value->isValid()) {
-                
+
                 $this->dispatcher->dispatch($event, NeoxGeolocatorEvents::NEOX_GEOLOCATOR_FAIL);
-                
+
                 $route = $this->neoxBag->getNameRouteUnauthorized();
                 return $this->router->generate($route);
             }
-            
+
             $this->dispatcher->dispatch($event, NeoxGeolocatorEvents::NEOX_GEOLOCATOR_PASS);
             return true;
         }
-        
+
         public function checkIpPing(): bool
         {
             $ipClient = $this->getRealIp();
             return $this->getIpPing($ipClient);
-            
+
         }
-        
+
         /**
          * @throws \Exception
          */
-        public function buildClass(string $nameService) : object
+        public function buildClass(string $nameService): object
         {
             $className = "NeoxGeolocator\\NeoxGeolocatorBundle\\Pattern\\Services\\" . $nameService;
-            if (! class_exists($className)) {
+            if (!class_exists($className)) {
                 throw new \Exception("Service class '{$className}' does not exist.");
             }
-            
+
             return new $className(
                 $this->router,
                 $this->parameterBag,
@@ -167,83 +173,83 @@
                 $this->kernel
             );
         }
-        
+
         public function getNeoxBag(): neoxBag
         {
             return $this->neoxBag;
         }
-        
+
         /**
          * Set all filter ......
          */
-         
+
         protected function setFilter(): void
         {
-            $filter             = $this->strFy(array_merge($this->neoxBag->getFilterLocal(), $this->neoxBag->getFilterContinents()));
-            $item               = $this->strFy($this->Geolocation->toArray());
-            $filteredData       = $this->getFilteredData($item, $filter);
-            
+            $filter       = $this->strFy(array_merge($this->neoxBag->getFilterLocal(), $this->neoxBag->getFilterContinents()));
+            $item         = $this->strFy($this->Geolocation->toArray());
+            $filteredData = $this->getFilteredData($item, $filter);
+
             $this->setFilterConnection();
             $this->setFilterCrawler();
-            
+
         }
-        
+
         protected function setFilterLocal(): void
         {
-            $filter             = $this->strFy($this->neoxBag->getFilterLocal());
-            $item               = $this->strFy([$this->Geolocation->getCountryCode()]);
-            $filteredData       = $this->getFilteredData($item, $filter);
-            
+            $filter       = $this->strFy($this->neoxBag->getFilterLocal());
+            $item         = $this->strFy([ $this->Geolocation->getCountryCode() ]);
+            $filteredData = $this->getFilteredData($item, $filter);
+
         }
-        
+
         protected function setFilterConnection(): void
         {
-            $connection    = $this->neoxBag->getFilterConnection();
-            if (!empty($connection) && $this->Geolocation->getStatus() !== "fail" && $this->Geolocation->isProxy() ) {
+            $connection = $this->neoxBag->getFilterConnection();
+            if (!empty($connection) && $this->Geolocation->getStatus() !== "fail" && $this->Geolocation->isProxy()) {
                 // Send the modified response object to the event this country is not allowed
                 $this->Geolocation->setValid(false);
             }
         }
-        
+
         protected function setFilterContinents(): void
         {
-            $filter             = $this->strFy($this->neoxBag->getFilterContinents());
-            $item               = $this->strFy([$this->Geolocation->getContinent()]);
-            $filteredData       = $this->getFilteredData($item, $filter);
+            $filter       = $this->strFy($this->neoxBag->getFilterContinents());
+            $item         = $this->strFy([ $this->Geolocation->getContinent() ]);
+            $filteredData = $this->getFilteredData($item, $filter);
 
         }
-        
+
         protected function setFilterCrawler(): void
         {
-            $filter             = $this->strFy($this->neoxBag->getCrawler());
-            $item               = $this->strFy([$this->Geolocation->getReverse()]);
-            if ( $this->getFilteredData($item, $filter, false) ) {
+            $filter = $this->strFy($this->neoxBag->getCrawler());
+            $item   = $this->strFy([ $this->Geolocation->getReverse() ]);
+            if ($this->getFilteredData($item, $filter, false)) {
                 $this->Geolocation->setValid(true);
             }
         }
-        
+
         /**
          * @throws TransportExceptionInterface
          */
-        protected function senApi(string $api ): ?string
+        protected function senApi(string $api): ?string
         {
             try {
-                $response = $this->httpClient->request('GET', $api, ['timeout' => 20]);
-                
+                $response = $this->httpClient->request('GET', $api, [ 'timeout' => 20 ]);
+
                 if ($response->getStatusCode() != 200) {
                     // you might also want to log this situation.
                     return null;
                 }
-                
+
                 return $response->getContent();
             } catch (\Exception $e) {
                 // Log the exception message
                 //e.g something like $this->logger->error('API request failed: ' . $e->getMessage());
                 return null;
             }
-            
+
         }
-        
+
         /**yr
          *
          * @throws ServerExceptionInterface
@@ -252,9 +258,9 @@
          * @throws TransportExceptionInterface
          * @throws \JsonException
          */
-        protected function getRealIp( ): ?string
+        protected function getRealIp(): ?string
         {
-            
+
             // https://api.ipify.org?format=json
 //            $api            = "https://api.ipify.org?format=json";
 //            // todo: problem in same cas to get real ip !!!
@@ -262,13 +268,13 @@
 //            $ip     = json_decode($data, false, 512, JSON_THROW_ON_ERROR);
 //            return $ip->ip;
             // in dev mode mock
-            if ( $this->kernel->getEnvironment() === 'dev') {
-                // for test  Bulgary "156.146.55.226"
-                return $this->neoxBag->getIpLocalDev() ;
-            }
+//            if ( $this->kernel->getEnvironment() === 'dev') {
+//                // for test  Bulgary "156.146.55.226"
+//                return $this->neoxBag->getIpLocalDev() ;
+//            }
 
-            $request    = $this->requestStack->getCurrentRequest();
-            $ip         = $request->getClientIp();
+            $request = $this->requestStack->getCurrentRequest();
+            $ip      = $request->getClientIp();
 
             if ($request->headers->has('x-real-ip')) {
                 return $request->headers->get('x-real-ip');
@@ -280,17 +286,17 @@
 
             if ($request->headers->has('X-Forwarded-For')) {
                 $ips = explode(',', $request->headers->get('X-Forwarded-For'), 2);
-                $ip = trim($ips[0]); // The left-most IP address is the original client
+                $ip  = trim($ips[ 0 ]); // The left-most IP address is the original client
             }
 
             return $ip;
         }
-        
+
         protected function getParameter($key): UnitEnum|float|array|bool|int|string|null
         {
             return $this->parameterBag->get($key);
         }
-        
+
         /**
          * @param array $geoDataItems
          * @param array $geoDataFilters
@@ -300,14 +306,26 @@
          */
         private function getFilteredData(array $geoDataItems, array $geoDataFilters, bool $validateGeoLocation = true): array
         {
-            $filteredGeoData       = array_intersect($geoDataItems, $geoDataFilters);
-            if ( $validateGeoLocation ) {
-                $isGeoLocationValid            = count($filteredGeoData) > 0;
+            $filteredGeoData = array_intersect($geoDataItems, $geoDataFilters);
+            if ($validateGeoLocation) {
+                $isGeoLocationValid = count($filteredGeoData) > 0;
                 $this->Geolocation->setValid($isGeoLocationValid);
             }
             return $filteredGeoData;
         }
-        
+
+        private function setFilterLocalRangeIp(): bool
+        {
+            $ipRange    = $this->neoxBag->getFilterLocalRangeIp();
+            $ip         = $this->getRealIp();
+            return $this->startsWithAnyPrefix($ipRange, $ip) ?? false;
+        }
+
+        private function startsWithAnyPrefix(array $prefixes, string $string): bool
+        {
+            return !empty(array_filter($prefixes, fn($prefix) => strpos($string, $prefix) === 0));
+        }
+
         /**
          * @param $array
          *
@@ -322,7 +340,7 @@
                 return $value;
             }, $array);
         }
-        
+
         /**
          * @param string $session
          *
@@ -330,13 +348,13 @@
          */
         private function setTimer(): array
         {
-            $session    = $this->requestStack->getSession()->getId();
-            
+            $session = $this->requestStack->getSession()->getId();
+
             $timer = $this->neoxBag->getTimer();
             if (!$session) {
                 $session = uniqid("pass_", true);
-                $timer = 30;
+                $timer   = 30;
             }
-            return array($timer, $session);
+            return array( $timer, $session );
         }
     }

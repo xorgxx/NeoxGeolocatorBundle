@@ -48,5 +48,6 @@
             public ?string      $check_vpn                  = null,
             public ?bool        $forcer                     = false,
             public ?array       $check_ping                 = [],
+            public ?array       $filterLocalRangeIp         = [],
         ) {}
     }

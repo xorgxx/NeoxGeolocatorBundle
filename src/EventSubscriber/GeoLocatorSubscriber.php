@@ -66,9 +66,11 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
             $this->isRouteNameExclude($nameRoute) ||
             $redirectRequired ||
             $test === "Symfony BrowserKit")
+        
         {
             return;
         }
+
 
         $geolocator         = $this->geolocatorFactory->getGeolocatorService()->checkAuthorize();
         
@@ -80,18 +82,22 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         $response           = new RedirectResponse($geolocator);
         $event->setController(fn() => $response);
     }
-
-    /**
-     * @throws ReflectionException
-     */
+    
     private function isRouteNameExclude($CurrentNameRoute): bool
     {
         $nameRouteExclude       = $this->geolocatorFactory->getGeolocatorService()->getNeoxBag()->getNameRouteExclude() ?? [];
-        return count(array_intersect([$CurrentNameRoute], $nameRouteExclude)) > 0;
+        $filteredGeoData        = count(array_intersect([$CurrentNameRoute], $nameRouteExclude)) > 0;
+        return $filteredGeoData;
     }
     
     private function isProfilerController($controller): bool
     {
+        return str_starts_with($controller, 'web_profiler.controller.profiler::');
+    }
+
+    private function excludeIpAddress($controller): bool
+    {
+//        $this->geolocatorFactory->getGeolocatorService()->
         return str_starts_with($controller, 'web_profiler.controller.profiler::');
     }
     

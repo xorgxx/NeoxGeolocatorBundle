@@ -87,11 +87,12 @@
         {
             $this->cache->delete($limiterKey);
         }
-
+        
         private function resetLimiterValue($limiterKey, $limiterValue, $expire)
         {
             return $this->cache->get($limiterKey, function (ItemInterface $item) use ( $expire, $limiterValue) {
                 if ($expire instanceof \DateTime) {
+                    /** @var \DateTime $expire */
                     $expire = $expire->format("Ymd H:i");
                 }
 
@@ -100,20 +101,4 @@
                 return $limiterValue;
             });
         }
-
-//        private function resetLimiterValue($limiterKey, $limiterValue, $expire)
-//        {
-//            return $this->cache->get($limiterKey, function (ItemInterface $item) use ($expire, $limiterValue) {
-//                if ($expire instanceof \DateTimeInterface) {
-//
-//                } elseif (is_int($expire)) {
-//                    $expire = new \DateTime("@$expire", new \DateTimeZone("Europe/Paris"));
-//
-//                } else {
-//                    $expire = (new \DateTime("now", new \DateTimeZone('Europe/Paris')))->modify('+2 minutes');
-//                }
-//                $item->expiresAt($expire);
-//                return $limiterValue;
-//            });
-//        }
     }
