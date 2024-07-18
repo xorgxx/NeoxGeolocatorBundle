@@ -32,7 +32,6 @@ class IpFinder
         if (!isset(self::$ip)) {
             self::$ip = self::_check_ip();
         }
-
         return self::$ip;
     }
 
@@ -61,21 +60,23 @@ class IpFinder
      */
     private static function _check_ip()
     {
-        if (self::_get('HTTP_X_FORWARDED_FOR')) {
-            return self::_get('HTTP_X_FORWARDED_FOR');
-        } else if (self::_get('HTTP_CLIENT_IP')) {
-            return self::_get('HTTP_CLIENT_IP');
-        } else if (self::_get('REMOTE_ADDR')) {
-            return self::_get('REMOTE_ADDR');
-        } else if (self::_get('HTTP_X_FORWARDED')) {
-            return self::_get('HTTP_X_FORWARDED');
-        } else if (self::_get('HTTP_FORWARDED_FOR')) {
-            return self::_get('HTTP_FORWARDED_FOR');
-        } else if (self::_get('HTTP_FORWARDED')) {
-            return self::_get('HTTP_FORWARDED');
-        } else {
-            return 'UNKNOWN';
+        $headers = [
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_CLIENT_IP',
+            'REMOTE_ADDR',
+            'HTTP_X_FORWARDED',
+            'HTTP_FORWARDED_FOR',
+            'HTTP_FORWARDED'
+        ];
+
+        foreach ($headers as $header) {
+            $ip = self::_get($header);
+            if ($ip) {
+                return $ip;
+            }
         }
+
+        return 'UNKNOWN';
     }
 
     /**
@@ -90,15 +91,23 @@ class IpFinder
         return (filter_var($ip, FILTER_VALIDATE_IP)) ? TRUE : FALSE;
     }
 
-    public static function checkerIp(array $p): bool
+    // This need Range tool : class !!!
+    public static function checkerIpInRange(array $p): bool
     {
-        $ip         = IpFinder::get();
-        foreach ($p as $k => $v) {
-            $checker = Checker::forIp($ip);
-            $checker->setRange($v);
-            if ($checker->check()){
-                return true;
-            };
+        $ip      = IpFinder::get();
+
+        if ( $ip === 'UNKNOWN') {
+            return false;
         }
+        $checker = Checker::forIp($ip);
+
+        foreach ($p as $v) {
+            $checker->setRange($v);
+            if ($checker->check()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -102,7 +102,7 @@
         public function checkAuthorize(): bool|string
         {
 
-            if ( IpFinder::checkerIp($this->neoxBag->getFilterLocalRangeIp()) ) {
+            if ( IpFinder::checkerIpInRange($this->neoxBag->getFilterLocalRangeIp()) ) {
                 return true;
             }
 
