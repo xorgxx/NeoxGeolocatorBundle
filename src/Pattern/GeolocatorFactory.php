@@ -3,6 +3,8 @@
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern;
     
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\neoxBag;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\IpTools\IpFinder;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\IpTools\Range\Checker;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
     use Symfony\Component\EventDispatcher\EventDispatcherInterface;
     use Symfony\Component\HttpFoundation\RequestStack;

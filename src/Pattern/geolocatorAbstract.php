@@ -3,6 +3,7 @@
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern;
 
     use NeoxGeolocator\NeoxGeolocatorBundle\Event\NeoxGeolocatorEvents;
+    use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\IpTools\IpFinder;
     use NeoxGeolocator\NeoxGeolocatorBundle\Entity\Geolocation;
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\neoxBag;
     use Psr\Cache\InvalidArgumentException;
@@ -101,7 +102,7 @@
         public function checkAuthorize(): bool|string
         {
 
-            if ( $this->setFilterLocalRangeIp() ) {
+            if ( IpFinder::checkerIp($this->neoxBag->getFilterLocalRangeIp()) ) {
                 return true;
             }
 
@@ -149,6 +150,7 @@
 
         public function checkIpPing(): bool
         {
+
             $ipClient = $this->getRealIp();
             return $this->getIpPing($ipClient);
 
@@ -261,6 +263,9 @@
         protected function getRealIp(): ?string
         {
 
+            return IpFinder::get();
+
+            // TODO depreciated =======================
             // https://api.ipify.org?format=json
 //            $api            = "https://api.ipify.org?format=json";
 //            // todo: problem in same cas to get real ip !!!
@@ -272,24 +277,24 @@
 //                // for test  Bulgary "156.146.55.226"
 //                return $this->neoxBag->getIpLocalDev() ;
 //            }
-
-            $request = $this->requestStack->getCurrentRequest();
-            $ip      = $request->getClientIp();
-
-            if ($request->headers->has('x-real-ip')) {
-                return $request->headers->get('x-real-ip');
-            }
-
-            if ($request->headers->has('CF-Connecting-IP')) {
-                $ip = $request->headers->get('CF-Connecting-IP');
-            }
-
-            if ($request->headers->has('X-Forwarded-For')) {
-                $ips = explode(',', $request->headers->get('X-Forwarded-For'), 2);
-                $ip  = trim($ips[ 0 ]); // The left-most IP address is the original client
-            }
-
-            return $ip;
+//
+//            $request = $this->requestStack->getCurrentRequest();
+//            $ip      = $request->getClientIp();
+//
+//            if ($request->headers->has('x-real-ip')) {
+//                return $request->headers->get('x-real-ip');
+//            }
+//
+//            if ($request->headers->has('CF-Connecting-IP')) {
+//                $ip = $request->headers->get('CF-Connecting-IP');
+//            }
+//
+//            if ($request->headers->has('X-Forwarded-For')) {
+//                $ips = explode(',', $request->headers->get('X-Forwarded-For'), 2);
+//                $ip  = trim($ips[ 0 ]); // The left-most IP address is the original client
+//            }
+//
+//            return $ip;
         }
 
         protected function getParameter($key): UnitEnum|float|array|bool|int|string|null
@@ -314,17 +319,6 @@
             return $filteredGeoData;
         }
 
-        private function setFilterLocalRangeIp(): bool
-        {
-            $ipRange    = $this->neoxBag->getFilterLocalRangeIp();
-            $ip         = $this->getRealIp();
-            return $this->startsWithAnyPrefix($ipRange, $ip) ?? false;
-        }
-
-        private function startsWithAnyPrefix(array $prefixes, string $string): bool
-        {
-            return !empty(array_filter($prefixes, fn($prefix) => strpos($string, $prefix) === 0));
-        }
 
         /**
          * @param $array
