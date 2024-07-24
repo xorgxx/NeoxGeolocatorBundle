@@ -61,20 +61,20 @@ class IpFinder
      */
     private static function _check_ip(): bool|string
     {
-        return self::_get('REMOTE_ADDR');
-        if (Request::createFromGlobals()->getClientIp()) {
-            return Request::createFromGlobals()->getClientIp();
-        }
+//        return self::_get('REMOTE_ADDR');
+//        if (Request::createFromGlobals()->getClientIp()) {
+//            return Request::createFromGlobals()->getClientIp();
+//        }
 
         $headers = [
             'x-real-ip',
             'CF-Connecting-IP',
             'HTTP_CLIENT_IP',
-            'REMOTE_ADDR',
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_FORWARDED',
-            'HTTP_FORWARDED_FOR',
-            'HTTP_FORWARDED'
+//            'REMOTE_ADDR',
+            'X_FORWARDED_FOR',
+            'X_FORWARDED',
+            'FORWARDED_FOR',
+            'FORWARDED'
         ];
 
         foreach ($headers as $header) {
