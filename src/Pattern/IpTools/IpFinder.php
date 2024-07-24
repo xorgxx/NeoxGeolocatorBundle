@@ -3,6 +3,7 @@
 namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern\IpTools;
 
 use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\IpTools\Range\Checker;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class IP Finder
@@ -60,6 +61,10 @@ class IpFinder
      */
     private static function _check_ip(): bool|string
     {
+        if (Request::createFromGlobals()->getClientIp()) {
+            return Request::createFromGlobals()->getClientIp();
+        }
+
         $headers = [
             'x-real-ip',
             'CF-Connecting-IP',
