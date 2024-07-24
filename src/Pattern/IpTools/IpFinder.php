@@ -61,6 +61,7 @@ class IpFinder
      */
     private static function _check_ip(): bool|string
     {
+        $ip = self::_get('REMOTE_ADDR');
         if (Request::createFromGlobals()->getClientIp()) {
             return Request::createFromGlobals()->getClientIp();
         }
