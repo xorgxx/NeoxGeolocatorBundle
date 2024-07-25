@@ -80,7 +80,8 @@ class IpFinder
         foreach ($headers as $header) {
             $ip = self::_get($header);
             if ($ip) {
-                return $ip;
+                // ip fist is real ip
+                return is_array($ip) ? $ip[0] : $ip;
             }
         }
 
