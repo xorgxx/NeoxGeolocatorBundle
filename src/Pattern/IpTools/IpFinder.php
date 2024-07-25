@@ -66,29 +66,39 @@ class IpFinder
 //            return Request::createFromGlobals()->getClientIp();
 //        }
 
-//        $p =  Request::createFromGlobals()->getClientIp();
+//        $p =  Request::createFromGlobals();
 
-//            return $ip;
-        $headers = [
-            'x-real-ip',
-            'CF-Connecting-IP',
-            'HTTP_CLIENT_IP',
-//            'REMOTE_ADDR',
-            'X-Forwarded-For',
-//            'X_FORWARDED',
-//            'FORWARDED_FOR',
-//            'FORWARDED'
-        ];
+        // TODO depreciated =======================
+        // https://api.ipify.org?format=json
+//            $api            = "https://api.ipify.org?format=json";
+//            // todo: problem in same cas to get real ip !!!
+//            $data   = $this->senApi( $api );
+//            $ip     = json_decode($data, false, 512, JSON_THROW_ON_ERROR);
+//            return $ip->ip;
+        // in dev mode mock
+//        if ( $this->kernel->getEnvironment() === 'dev') {
+//            // for test  Bulgary "156.146.55.226"
+//            return $this->neoxBag->getIpLocalDev() ;
+//        }
 
-        foreach ($headers as $header) {
-            $ip = self::_get($header);
-            if ($ip) {
-                // ip fist is real ip
-                return is_array($ip) ? $ip[0] : $ip;
-            }
+        $request = Request::createFromGlobals();
+        $ip      = $request->getClientIp();
+
+
+        if ($request->headers->has('x-real-ip')) {
+            return $request->headers->get('x-real-ip');
         }
 
-        return 'UNKNOWN';
+        if ($request->headers->has('CF-Connecting-IP')) {
+            $ip = $request->headers->get('CF-Connecting-IP');
+        }
+
+        if ($request->headers->has('X-Forwarded-For')) {
+            $ips = explode(',', $request->headers->get('X-Forwarded-For'), 2);
+            $ip  = trim($ips[ 0 ]); // The left-most IP address is the original client
+        }
+
+        return $ip;
     }
 
     /**
