@@ -66,15 +66,18 @@ class IpFinder
 //            return Request::createFromGlobals()->getClientIp();
 //        }
 
+//        $p =  Request::createFromGlobals()->getClientIp();
+
+//            return $ip;
         $headers = [
             'x-real-ip',
             'CF-Connecting-IP',
             'HTTP_CLIENT_IP',
 //            'REMOTE_ADDR',
-            'X_FORWARDED_FOR',
-            'X_FORWARDED',
-            'FORWARDED_FOR',
-            'FORWARDED'
+            'X-Forwarded-For',
+//            'X_FORWARDED',
+//            'FORWARDED_FOR',
+//            'FORWARDED'
         ];
 
         foreach ($headers as $header) {
