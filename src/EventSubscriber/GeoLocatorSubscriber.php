@@ -96,6 +96,10 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
 
     private function excludeIpAddress($controller): bool
     {
+        // check if the controller having name, if not probality it's a stimulus controller or ajax, turbo !!!
+        if (!is_string($controller)) {
+            return true;
+        }
 //        $this->geolocatorFactory->getGeolocatorService()->
         return str_starts_with($controller, 'web_profiler.controller.profiler::');
     }
