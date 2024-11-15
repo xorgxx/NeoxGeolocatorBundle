@@ -1,26 +1,26 @@
 <?php
-    
+
     namespace NeoxGeolocator\NeoxGeolocatorBundle\Pattern;
-    
+
     use NeoxGeolocator\NeoxGeolocatorBundle\Attribute\NeoxGeoBag;
     use NeoxGeolocator\NeoxGeolocatorBundle\Model\neoxBag;
     use ReflectionClass;
     use ReflectionMethod;
     use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
     use Symfony\Component\HttpFoundation\RequestStack;
-    
+
     class NeoxGeoBagService
     {
         private array $neoxBagParams    = [];
         public ?neoxBag $neoxBag        = null;
-        private string $controller;
-        private string $action;
-        
+        private ?string $controller     = null;
+        private ?string $action         = null;
+
         public function __construct(private readonly RequestStack $requestStack, private readonly ParameterBagInterface $parameterBag)
         {
-        
+
         }
-        
+
         public function getneoxBag(): neoxBag
         {
             if (!$this->neoxBag) {
@@ -28,12 +28,12 @@
             }
             return $this->neoxBag;
         }
-        
+
         public function setNeoxBag(): neoxBag
         {
             // first apply seo settings from configuration
             $this->setNeoxBagParams();
-            
+
             // then apply the controller and method attributes
             $attributes = $this->getAttributesFromControllerAndMethod();
             foreach ($attributes as $attribute) {
@@ -47,7 +47,7 @@
             }
             return $this->neoxBag;
         }
-        
+
         private function setNeoxBagParams(): void
         {
             $this->neoxBag           = new neoxBag();
@@ -69,36 +69,71 @@
                 ->setFilterLocalRangeIp($this->neoxBagParams['filter_local_range_ip'] ?? [])
             ;
         }
-        
+
+//        private function getAttributesFromControllerAndMethod(): array
+//        {
+//            $this->getInfoAboutCurrentRequest();
+//
+//            if ($this->controller === "null") {
+//                return [];
+//            }
+//
+//            $classAttributes    = (new ReflectionClass($this->controller))->getAttributes(NeoxGeoBag::class);
+//            $methodAttributes   = (new ReflectionMethod($this->controller, $this->action))->getAttributes(NeoxGeoBag::class);
+//            return array_merge($classAttributes, $methodAttributes);
+//        }
+
         private function getAttributesFromControllerAndMethod(): array
         {
             $this->getInfoAboutCurrentRequest();
-            
-            if ($this->controller === "null") {
+
+            if (!$this->controller || !$this->action) {
                 return [];
             }
-            
-            $classAttributes    = (new ReflectionClass($this->controller))->getAttributes(NeoxGeoBag::class);
-            $methodAttributes   = (new ReflectionMethod($this->controller, $this->action))->getAttributes(NeoxGeoBag::class);
-            return array_merge($classAttributes, $methodAttributes);
+
+            try {
+                $classAttributes = (new ReflectionClass($this->controller))->getAttributes(NeoxGeoBag::class);
+                $methodAttributes = (new ReflectionMethod($this->controller, $this->action))->getAttributes(NeoxGeoBag::class);
+
+                return array_merge($classAttributes, $methodAttributes);
+            } catch (\ReflectionException $e) {
+                // Log ou gérer l'erreur
+                return [];
+            }
         }
-        
+
+//        private function getInfoAboutCurrentRequest(): void
+//        {
+//            $request = $this->requestStack->getCurrentRequest();
+//
+//            if ($request) {
+//                $controllerName = $request->attributes->get('_controller');
+//                if ($controllerName) {
+//                    list($this->controller, $this->action) = explode('::', $controllerName);
+//                }else{
+//                    $this->controller = "null";
+//                    $this->action = "null";
+//                }
+//
+//            }
+//        }
         private function getInfoAboutCurrentRequest(): void
         {
             $request = $this->requestStack->getCurrentRequest();
-            
+
             if ($request) {
                 $controllerName = $request->attributes->get('_controller');
-                if ($controllerName) {
-                    list($this->controller, $this->action) = explode('::', $controllerName);
-                }else{
-                    $this->controller = "null";
-                    $this->action = "null";
-                }
 
+                if (is_string($controllerName) && strpos($controllerName, '::') !== false) {
+                    list($this->controller, $this->action) = explode('::', $controllerName);
+                } else {
+                    // Gère les cas où le contrôleur est invalide
+                    $this->controller = null;
+                    $this->action = null;
+                }
             }
         }
-        
+
         private function toCamelCase($str): string
         {
             return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $str))));
