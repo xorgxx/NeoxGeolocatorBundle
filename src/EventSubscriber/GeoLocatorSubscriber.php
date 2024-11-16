@@ -3,6 +3,7 @@
 namespace NeoxGeolocator\NeoxGeolocatorBundle\EventSubscriber;
 
 use NeoxGeolocator\NeoxGeolocatorBundle\Pattern\GeolocatorFactory;
+use Psr\Cache\InvalidArgumentException;
 use ReflectionException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -14,6 +15,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 #[\AllowDynamicProperties]
 class GeoLocatorSubscriber implements EventSubscriberInterface
@@ -54,6 +56,14 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         }
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function onKernelController(ControllerArgumentsEvent $event): void
     {
         $test = $event->getRequest()->server->get("HTTP_USER_AGENT");
@@ -81,7 +91,10 @@ class GeoLocatorSubscriber implements EventSubscriberInterface
         $response           = new RedirectResponse($geolocator);
         $event->setController(fn() => $response);
     }
-    
+
+    /**
+     * @throws ReflectionException
+     */
     private function isRouteNameExclude($CurrentNameRoute): bool
     {
         $nameRouteExclude       = $this->geolocatorFactory->getGeolocatorService()->getNeoxBag()->getNameRouteExclude() ?? [];

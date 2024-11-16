@@ -94,6 +94,11 @@ It set automatique but you can custom (by default)
           - "Seo_unauthorized"
           - "app_home_profile_crud_alert"  
           
+      filter_local_range_ip :
+          - "192.168.1.254"
+#          - "127.0.*.*"
+#          - "172.17.*.*"
+
       name_route_unauthorized: "Seo_unauthorized"
       timer: 10
       check_vpn: "seo_check_vpn" >>> name route to redirect when detect no id session yet 
